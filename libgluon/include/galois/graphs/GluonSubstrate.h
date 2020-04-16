@@ -335,7 +335,7 @@ private:
    * @param global_total_owned_nodes number of "owned" nodes on all hosts
    */
   void reportProxyStats(uint64_t global_total_mirror_nodes,
-                        uint64_t global_total_owned_nodes) {
+                        uint64_t GALOIS_UNUSED(global_total_owned_nodes)) {
     float replication_factor =
         (float)(global_total_mirror_nodes + userGraph.globalSize()) /
         (float)userGraph.globalSize();
