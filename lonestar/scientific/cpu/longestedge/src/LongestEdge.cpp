@@ -28,6 +28,10 @@
 #include <tuple>
 #include <vector>
 
+#include <eigen3/Eigen/Dense>
+
+//typedef Eigen::Matrix<double, 16, 1> Vector16d;
+
 namespace cll = llvm::cl;
 
 static const char* name = "Longest edge mesh generator";
@@ -48,6 +52,7 @@ static cll::opt<bool>
     version2D("version2D",
               cll::desc("Calculate distances using only XY coordinates"));
 static cll::opt<int> steps("s", cll::Positional, cll::desc("Number of steps"));
+static cll::opt<int> k("k");
 static cll::opt<double> N("N", cll::desc("Latitude of north border"));
 static cll::opt<double> S("S", cll::desc("Latitude of south border"));
 static cll::opt<double> E("E", cll::desc("Longitude of east border"));
@@ -166,7 +171,7 @@ int main(int argc, char** argv) {
   //    afterStep(0, graph);
   for (int j = 0; j < steps; j++) {
     galois::for_each(galois::iterate(graph.begin(), graph.end()),
-                     [&](GNode node, auto&) {
+                     [&](GNode node, auto& /*unused*/) {
                        if (basicCondition(graph, node)) {
 
                          // terrain checker to see if refinement needed
@@ -211,8 +216,21 @@ int main(int argc, char** argv) {
           galois::loopname(("step" + std::to_string(j)).c_str()));
     }
 
-    step.stop();
-    galois::gInfo("Step ", j, " finished.");
+    for (int i = 0; i < 3 * k; ++i) {
+      Vector16d vector = Vector16d::Random();
+      galois::for_each(
+          galois::iterate(graph.begin(), graph.end()),
+          [&](GNode node, auto& /**/) {
+            // only need to check hyperedges
+            if (!basicCondition(graph, node)) {
+              return;
+            }
+            NodeData& data = node->getData();
+            data.setResult(data.getMatrix() * vector);
+          },
+          galois::loopname(
+              ("Matrix product, step " + std::to_string(i)).c_str()));
+    }
   }
   galois::gInfo("All steps finished.");
 
