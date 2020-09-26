@@ -108,7 +108,7 @@ void SrtmReader::read_from_file(int north_border_int, int west_border_int,
 
   FILE* map_file;
   if ((map_file = fopen(file_to_open, "rb")) == NULL) {
-    fprintf(stderr, "%s\n", strerror(errno));
+    fprintf(stderr, "Could not open file: %s. %s\n", file_to_open, strerror(errno));
     exit(1);
   }
   int cells_in_degree = VALUES_IN_DEGREE + 1;
