@@ -127,24 +127,27 @@ void processGraph(Graph& graph, std::vector<InpNodeInfo>& nodeVector,
     // Finally, we generate the triangle edges
     for (auto i = 0u; i < intNodesID.size(); ++i) {
 
-      // Create the inp edge
-      const auto edge =
-          inpEdge{std::min(intNodesID[i], intNodesID[(i + 1) % 3]),
-                  std::max(intNodesID[i], intNodesID[(i + 1) % 3])};
+      // Get the graph edge to see if it exists
+      const auto graphEdge =
+          connManager.getEdge(intNodes[i], intNodes[(i + 1) % 3]);
+      if (graphEdge) {
+        // Create the inp edge
+        const auto edge =
+            inpEdge{std::min(intNodesID[i], intNodesID[(i + 1) % 3]),
+                    std::max(intNodesID[i], intNodesID[(i + 1) % 3])};
 
-      // Check if it has been created before
-      if (edgeSet.insert(edge).second) {
+        // Check if it has been created before
+        if (edgeSet.insert(edge).second) {
 
-        // Get the graph edge to see if it's on the boundary
-        const auto graphEdge =
-            connManager.getEdge(intNodes[i], intNodes[(i + 1) % 3]);
+          // Check if it is on the boundary
+          const auto mat =
+              connManager.getGraph().getEdgeData(graphEdge.get()).isBorder()
+                  ? 6u
+                  : 5u;
 
-        const auto mat =
-            connManager.getGraph().getEdgeData(graphEdge.get()).isBorder() ? 6u
-                                                                           : 5u;
-
-        conecVector.push_back(InpConecInfo{
-            std::vector<size_t>{edge.first, edge.second}, mat, "line"});
+          conecVector.push_back(InpConecInfo{
+              std::vector<size_t>{edge.first, edge.second}, mat, "line"});
+        }
       }
     }
   }

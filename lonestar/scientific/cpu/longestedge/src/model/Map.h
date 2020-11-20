@@ -38,6 +38,11 @@ public:
       : width(width), length(length), cell_width(cellWidth),
         cell_length(cellLength), data(data), utm(true), zone(-1) {}
 
+  Map(double** data, size_t width, size_t length, double cellWidth,
+      double cellLength, bool utm)
+      : width(width), length(length), cell_width(cellWidth),
+        cell_length(cellLength), data(data), utm(utm), zone(-1) {}
+
   static double** init_map_data(size_t rows, size_t cols);
 
   void print_map();
@@ -85,6 +90,10 @@ public:
   char getHemisphere() const { return hemisphere; }
 
   void setHemisphere(char hemisphere) { Map::hemisphere = hemisphere; }
+
+  double getRegionLength() const { return (length - 1) * cell_length; }
+
+  double getRegionWidth() const { return (width - 1) * cell_width; }
 
   ~Map();
 };

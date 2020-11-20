@@ -64,11 +64,17 @@ double Map::get_height(double lon, double lat, bool convert) {
   double top_left_height =
       get_height_wo_interpol(x_grid_int_part, y_grid_int_part, 1);
   double top_right_height =
-      get_height_wo_interpol(x_grid_int_part, y_grid_int_part, 2);
+      (Utils::equals(x_fract, 0))
+          ? 0
+          : get_height_wo_interpol(x_grid_int_part, y_grid_int_part, 2);
   double bottom_right_height =
-      get_height_wo_interpol(x_grid_int_part, y_grid_int_part, 3);
+      (Utils::equals(x_fract, 0) || Utils::equals(y_fract, 0))
+          ? 0
+          : get_height_wo_interpol(x_grid_int_part, y_grid_int_part, 3);
   double bottom_left_height =
-      get_height_wo_interpol(x_grid_int_part, y_grid_int_part, 4);
+      (Utils::equals(y_fract, 0))
+          ? 0
+          : get_height_wo_interpol(x_grid_int_part, y_grid_int_part, 4);
 
   // Sum the contributions of each corner
   double height = 0.;

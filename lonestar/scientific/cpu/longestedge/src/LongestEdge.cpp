@@ -40,7 +40,7 @@ static cll::opt<std::string> dataDir("data", cll::Positional,
                                      cll::desc("Directory with data files"));
 static cll::opt<std::string> output("o", cll::Positional,
                                     cll::desc("Basename for output file"));
-static cll::opt<int>
+static cll::opt<double>
     tolerance("l", cll::Positional,
               cll::desc("Tolerance for for refinement in meters"),
               cll::init(5));
@@ -101,7 +101,7 @@ int main(int argc, char** argv) {
       AsciiReader reader;
       map = reader.read(asciiFile);
       GraphGenerator::generateSampleGraphWithData(
-          graph, *map, 0, map->getLength() - 1, map->getWidth() - 1, 0,
+          graph, *map, 0, map->getRegionLength(), map->getRegionWidth(), 0,
           version2D);
     } else {
       SrtmReader reader;
@@ -163,10 +163,10 @@ int main(int argc, char** argv) {
   vector<Production*> productions = {&production1, &production2, &production3,
                                      &production4, &production5, &production6};
   galois::gInfo("Loop is being started...");
-  //    afterStep(0, graph);
-  for (int j = 0; j < steps; j++) {
+      afterStep(0, graph);
+  for (int j = 1; j <= steps; j++) {
     galois::for_each(galois::iterate(graph.begin(), graph.end()),
-                     [&](GNode node, auto&) {
+                     [&](GNode node, auto& /*unused*/) {
                        if (basicCondition(graph, node)) {
 
                          // terrain checker to see if refinement needed
@@ -242,4 +242,6 @@ bool basicCondition(const Graph& graph, GNode& node) {
 }
 
 //! Writes intermediate data to file
-void afterStep(int GALOIS_UNUSED(step), Graph& GALOIS_UNUSED(graph)) {}
+void afterStep(int GALOIS_UNUSED(step), Graph& GALOIS_UNUSED(graph)) {
+  inpWriter(output + "_s" + std::to_string(step) + ".inp", graph);
+}
