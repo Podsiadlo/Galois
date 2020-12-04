@@ -19,6 +19,7 @@
 #include "utils/GraphGenerator.h"
 #include "utils/Utils.h"
 #include "readers/AsciiReader.h"
+#include "error-counters/L2ErrorCounter.h"
 
 #include <Lonestar/BoilerPlate.h>
 
@@ -69,7 +70,7 @@ static cll::opt<bool> altOutput(
 static cll::opt<bool> display("display",
                               cll::desc("Use external visualizator."));
 
-void afterStep(int i, Graph& graph);
+void afterProduction(int step, Graph& graph);
 
 bool basicCondition(const Graph& graph, GNode& node);
 
@@ -163,7 +164,8 @@ int main(int argc, char** argv) {
   vector<Production*> productions = {&production1, &production2, &production3,
                                      &production4, &production5, &production6};
   galois::gInfo("Loop is being started...");
-      afterStep(0, graph);
+  afterProduction(0, graph);
+  L2ErrorCounter errorCounter{*map};
   for (int j = 1; j <= steps; j++) {
     galois::for_each(galois::iterate(graph.begin(), graph.end()),
                      [&](GNode node, auto& /*unused*/) {
@@ -202,7 +204,7 @@ int main(int argc, char** argv) {
             // one
             for (Production* production : productions) {
               if (production->execute(pState, ctx)) {
-                afterStep(j, graph);
+                afterProduction(j, graph);
                 prodExecuted = true;
                 return;
               }
@@ -210,8 +212,17 @@ int main(int argc, char** argv) {
           },
           galois::loopname(("step" + std::to_string(j)).c_str()));
     }
-
     step.stop();
+
+    galois::for_each(galois::iterate(graph.begin(), graph.end()),
+                     [&](GNode node, auto& /*unused*/) {
+                       if (basicCondition(graph, node)) {
+                         errorCounter.writeErrorOfTriangle(
+                             connManager.getVerticesCoords(node));
+                       }
+                     });
+    galois::gInfo("L2 Error of step ", j,
+                  " is: ", errorCounter.popErrorAsRelative());
     galois::gInfo("Step ", j, " finished.");
   }
   galois::gInfo("All steps finished.");
@@ -242,6 +253,6 @@ bool basicCondition(const Graph& graph, GNode& node) {
 }
 
 //! Writes intermediate data to file
-void afterStep(int GALOIS_UNUSED(step), Graph& GALOIS_UNUSED(graph)) {
+void afterProduction(int GALOIS_UNUSED(step), Graph& GALOIS_UNUSED(graph)) {
   inpWriter(output + "_s" + std::to_string(step) + ".inp", graph);
 }
