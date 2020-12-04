@@ -32,7 +32,7 @@ int AsciiReader::readLine(FILE* f, char* buffer, const size_t buffersize,
 }
 
 Map* AsciiReader::read(const std::string filename) {
-  const size_t tambuf = 4096;
+  const size_t tambuf = 32 * 1024;
   char buf[tambuf];
   size_t line_number = 0;
 
