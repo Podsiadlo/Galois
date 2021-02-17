@@ -4,18 +4,20 @@
 #include "../model/Edge.h"
 
 std::vector<int> getLongest(const std::vector<Edge>& edges) {
-  std::vector<Edge> longest;
-  double record = 0;
-  for(auto edge: edges) {
-    if (edge.getLength() - record > EPS) {
-      longest.clear();
-      longest.emplace_back(edge);
-      record = edge.getLength();
-    } else if (edge.getLength() - record >= -EPS) {
-      longest.emplace_back(edge);
+  std::vector<int> longestEdges;
+  double bestLength = 0;
+  for (size_t i = 0; i < edges.size(); ++i) {
+    auto currentEdge = edges[i];
+    double currentLength = currentEdge.getLength();
+    if (currentLength - bestLength > EPS) {
+      longestEdges.clear();
+      longestEdges.emplace_back(i);
+      bestLength = currentLength;
+    } else if (currentLength - bestLength >= -EPS) {
+      longestEdges.emplace_back(i);
     }
   }
-  return longest;
+  return longestEdges;
 }
 
 bool isAnyBroken(const std::vector<Edge> edges) {
@@ -27,7 +29,7 @@ bool isAnyBroken(const std::vector<Edge> edges) {
 }
 
 int chooseGreatest(std::vector<int> toBreak, const std::vector<Edge>& edges) {
-  return 0;
+  return 0;//TODO: "less" operator from presentation
 }
 
 #endif //GALOIS_PRODUCTION_HELPERS_H

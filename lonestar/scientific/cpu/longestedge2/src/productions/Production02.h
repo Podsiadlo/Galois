@@ -5,11 +5,12 @@
 #include "../model/Graph.h"
 #include "../model/ProductionState.h"
 #include "../model/Edge.h"
-#include "../model/MyGraph.h"
+#include "../model/GraphAdapter.h"
 #include "../utils/ProductionHelpers.h"
+
 class Production02 {
 public:
-  bool execute(GNode& triangle, MyGraph& graph, Bag &bag,
+  bool execute(GNode& triangle, GraphAdapter& graph, Bag &bag,
                galois::UserContext<GNode>& ctx) {
     auto edges = graph.getEdges(triangle);
     auto toBreak = whichToBreak(triangle, edges);
