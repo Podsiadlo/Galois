@@ -26,11 +26,11 @@ public:
   Coordinates(double x, double y, double z) : x(x), y(y), z(z) {}
 
   //! Determine z from given x, y based on the provided Map
-  Coordinates(double x, double y, Map& map)
+  Coordinates(double x, double y, const Map& map)
       : x(x), y(y), z(map.get_height(x, y)) {}
 
   //! x, y in the pair, height given by Map
-  Coordinates(std::pair<double, double> coords, Map& map)
+  Coordinates(std::pair<double, double> coords, const Map& map)
       : x(coords.first), y(coords.second),
         z(map.get_height(coords.first, coords.second)) {}
 

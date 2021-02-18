@@ -14,6 +14,8 @@ private:
 
   bool broken{false};
 
+  bool border{false};
+
   galois::optional<pair<reference_wrapper<const Coordinates>,
                         reference_wrapper<const Coordinates>>>
       nodes;
@@ -26,20 +28,22 @@ public:
                                     reference_wrapper<const Coordinates>>>()) {}
 
   Edge(reference_wrapper<const Coordinates> coordinates1,
-       reference_wrapper<const Coordinates> coordinates2, bool version2D)
-      : triangle(false),
+       reference_wrapper<const Coordinates> coordinates2, bool border,
+       bool version2D)
+      : triangle(false), border(border),
         nodes(make_pair(cref(coordinates1), cref(coordinates2))),
         length(coordinates1.get().dist(coordinates2.get(), version2D)) {}
 
   Edge(const Coordinates& coordinates1, const Coordinates& coordinates2,
-       bool version2D)
-      : triangle(false),
+       bool border, bool version2D)
+      : triangle(false), border(border),
         nodes(make_pair(cref(coordinates1), cref(coordinates2))),
         length(coordinates1.dist(coordinates2, version2D)) {}
 
   bool isTriangle() const { return triangle; }
   bool isToRefine() const { return toRefine; }
   void setToRefine(bool refine) { Edge::toRefine = refine; }
+  bool isBorder() const { return border; }
   bool isBroken() const { return broken; }
   void setBroken(bool isBroken) { Edge::broken = isBroken; }
   double getLength() const { return length; }

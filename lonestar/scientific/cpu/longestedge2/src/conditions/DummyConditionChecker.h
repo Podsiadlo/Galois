@@ -9,11 +9,11 @@ class DummyConditionChecker : ConditionChecker {
 public:
   //! Sets refinement and returns true for hyperedge nodes
   bool execute(GNode& node) override {
-    NodeData& nodeData = node->getData();
-    if (!nodeData.isHyperEdge()) {
+    Edge& edge = node->getData();
+    if (!edge.isTriangle()) {
       return false;
     }
-    nodeData.setToRefine(true);
+    edge.setToRefine(true);
     return true;
   }
 };

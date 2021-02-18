@@ -63,7 +63,7 @@ void Utils::shift(int from, int to, size_t* array) {
 }
 
 std::pair<double, double> Utils::convertToUtm(double latitude, double longitude,
-                                              Map& map) {
+                                              Map* map) {
   long zone;
   char hemisphere;
   double easting;
@@ -73,15 +73,15 @@ std::pair<double, double> Utils::convertToUtm(double latitude, double longitude,
     fprintf(stderr, "Error during conversion to UTM.\n");
     exit(13);
   }
-  if (map.getZone() != -1) {
-    if (map.getZone() != zone || map.getHemisphere() != hemisphere) {
+  if (map->getZone() != -1) {
+    if (map->getZone() != zone || map->getHemisphere() != hemisphere) {
       fprintf(stderr,
               "Error: All the points must be within the same UTM zone.\n");
       exit(14);
     }
   } else {
-    map.setZone(zone);
-    map.setHemisphere(hemisphere);
+    map->setZone(zone);
+    map->setHemisphere(hemisphere);
   }
   return std::pair<double, double>(easting, northing);
 }

@@ -36,7 +36,7 @@ public:
   static void shift(int from, int to, size_t* array);
 
   static std::pair<double, double> convertToUtm(double latitude,
-                                                double longitude, Map& map);
+                                                double longitude, Map* map);
 };
 
 #endif // TERGEN_UTILS_H

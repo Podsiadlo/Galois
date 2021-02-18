@@ -5,35 +5,38 @@
 
 class GraphAdapter : private boost::noncopyable {
 public:
+  GraphAdapter() : graph(new Graph{}) {}
   GraphAdapter(Graph* graph) : graph(graph) {}
+  virtual ~GraphAdapter() { delete graph; }
 
-  std::vector<GNode> getGNodesFrom(GNode parent) const {
+  std::vector<GNode> getGNodesFrom(GNode parent, bool triangles) const {
     std::vector<GNode> vertices;
-    for (Graph::edge_iterator ii = graph->edge_begin(parent),
-             ee = graph->edge_end(parent);
-         ii != ee; ++ii) {
-      vertices.emplace_back(graph->getEdgeDst(ii));
+    for(auto edge : graph->out_edges(parent)) {
+      auto neighbour = graph->getEdgeDst(edge);
+      if (neighbour->getData().isTriangle() == triangles) {
+        vertices.emplace_back(neighbour);
+      }
     }
     return vertices;
   }
 
-  GNode createAndAddNode(const Edge& nodeData) const {
-    auto *node = graph->createNode(nodeData);
+  GNode createAndAddNode(const Edge& nodeData) {
+    auto* node = graph->createNode(nodeData);
     graph->addNode(node);
     return node;
   }
 
-  std::vector<Edge> getEdges(const std::vector<GNode>& gNodes) const {
-    std::vector<Edge> edges;
-    for(GNode gNode : gNodes) {
+  std::vector<std::reference_wrapper<Edge>> getEdges(const std::vector<GNode>& gNodes) const {
+    std::vector<std::reference_wrapper<Edge>> edges;
+    for (GNode gNode : gNodes) {
       edges.emplace_back(gNode->getData());
     }
     return edges;
   }
 
-  void addEdge(GNode src, GNode dst) {
-    graph->addEdge(src, dst);
-  };
+  void addEdge(GNode src, GNode dst) { graph->addEdge(src, dst); };
+
+  Graph* getGraph() const { return graph; }
 
 private:
   Graph* graph;

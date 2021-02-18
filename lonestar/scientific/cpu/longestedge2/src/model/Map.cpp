@@ -26,11 +26,11 @@ void Map::print_map() {
   }
 }
 
-double Map::get_height(double lon, double lat) {
+double Map::get_height(double lon, double lat) const {
   return get_height(lon, lat, utm);
 }
 
-double Map::get_height(double lon, double lat, bool convert) {
+double Map::get_height(double lon, double lat, bool convert) const {
 
   double x, y;
 
@@ -82,7 +82,7 @@ double Map::get_height(double lon, double lat, bool convert) {
 
 // corner: 1 - top_left, 2 - top_right, 3 - bottom_right, 4 - bottom_left
 double Map::get_height_wo_interpol(const double lon_grid, const double lat_grid,
-                                   const int corner) {
+                                   const int corner) const {
 
   auto x = (int)lon_grid;
   auto y = (int)lat_grid;

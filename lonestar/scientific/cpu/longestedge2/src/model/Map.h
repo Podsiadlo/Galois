@@ -30,7 +30,7 @@ private:
   char hemisphere;
 
   double get_height_wo_interpol(const double lon, const double lat,
-                                const int corner);
+                                const int corner) const ;
 
 public:
   Map(double** data, size_t width, size_t length, double cellWidth,
@@ -42,9 +42,9 @@ public:
 
   void print_map();
 
-  double get_height(double lon, double lat);
+  double get_height(double lon, double lat) const;
 
-  double get_height(double lon, double lat, bool convert);
+  double get_height(double lon, double lat, bool convert) const;
 
   size_t getWidth() const { return width; }
 

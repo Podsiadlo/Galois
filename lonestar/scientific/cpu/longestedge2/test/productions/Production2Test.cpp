@@ -1,43 +1,54 @@
 #include "../testUtils.cpp"
-#include "../../src/productions/Production01.h"
+#include "../../src/model/GraphAdapter.h"
+#include "../../src/productions/Production02.h"
 
-std::vector<GNode>
-prepareTest1Graph(GraphAdapter* graph,
+std::vector<GNode> prepareTest2Graph(GraphAdapter* graph,
                   galois::InsertBag<Coordinates>* coordsBag) {
-  std::vector<std::reference_wrapper<const Coordinates>> coords;
+  std::vector<std::reference_wrapper<const Coordinates>> coords; /*bag*/
 
   coords.emplace_back(std::cref(coordsBag->emplace_back(Coordinates(0, 0, 0))));
   coords.emplace_back(std::cref(coordsBag->emplace_back(Coordinates(0, 1, 0))));
   coords.emplace_back(std::cref(coordsBag->emplace_back(Coordinates(1, 0, 0))));
+  coords.emplace_back(
+      std::cref(coordsBag->emplace_back(Coordinates(0.5, 0.5, 0))));
   //  coordsBag.emplace_back(Coordinates(1, 1, 0));
   std::vector<Edge> edges{};
 
   edges.emplace_back(Edge{coords[0], coords[1], true, true});
   edges.emplace_back(Edge{coords[0], coords[2], true, true});
   edges.emplace_back(Edge{coords[1], coords[2], true, true});
+  edges.emplace_back(Edge{coords[1], coords[3], true, true});
+  edges.emplace_back(Edge{coords[2], coords[3], true, true});
+
+  edges[2].setBroken(true);
 
   std::vector<GNode> gNodes{};
   gNodes.emplace_back(graph->createAndAddNode(Edge()));
   gNodes.emplace_back(graph->createAndAddNode(edges[0]));
   gNodes.emplace_back(graph->createAndAddNode(edges[1]));
   gNodes.emplace_back(graph->createAndAddNode(edges[2]));
+  gNodes.emplace_back(graph->createAndAddNode(edges[3]));
+  gNodes.emplace_back(graph->createAndAddNode(edges[4]));
 
   graph->addEdge(gNodes[0], gNodes[1]);
   graph->addEdge(gNodes[0], gNodes[2]);
   graph->addEdge(gNodes[0], gNodes[3]);
 
+  graph->addEdge(gNodes[2], gNodes[4]);
+  graph->addEdge(gNodes[2], gNodes[5]);
+
   return gNodes;
 }
 
-TEST_CASE("Production1 simple Test") {
+TEST_CASE("Production2 simple Test") {
   galois::SharedMemSys G;
   GraphAdapter graph{};
   galois::InsertBag<Coordinates> coordsBag;
-  vector<GNode> nodes = prepareTest1Graph(&graph, &coordsBag);
+  vector<GNode> nodes = prepareTest2Graph(&graph, &coordsBag);
   nodes[0]->getData().setToRefine(true);
   galois::UserContext<GNode> ctx;
   //  ConnectivityManager connManager{graph};
-  Production01 production{&graph};
+  Production02 production{&graph};
   //  ProductionState pState(connManager, nodes[5], false,
   //                         [](double, double) { return 0.; });
   production.execute(nodes[0], &coordsBag);
