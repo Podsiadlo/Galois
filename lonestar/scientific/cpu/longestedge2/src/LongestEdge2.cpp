@@ -21,6 +21,7 @@
 #include "readers/AsciiReader.h"
 #include "productions/Production01.h"
 #include "conditions/DummyConditionChecker.h"
+#include "productions/Production02.h"
 
 #include <Lonestar/BoilerPlate.h>
 
@@ -172,6 +173,7 @@ int main(int argc, char** argv) {
   DummyConditionChecker checker = DummyConditionChecker();
 
   Production01 production01{&graphAdapter};
+  Production02 production02{&graphAdapter};
   galois::gInfo("Loop is being started...");
   //    afterStep(0, graph);
 //  galois::InsertBag<Coordinates> bag{};
@@ -230,7 +232,9 @@ int main(int argc, char** argv) {
 //                return;
 //              }
 //            }
-            production01.execute(node, &coordsBag);
+            if (!production01.execute(node, &coordsBag)) {
+              production02.execute(node, &coordsBag);
+            }
           },
           galois::loopname(("step" + std::to_string(j)).c_str()));
     }

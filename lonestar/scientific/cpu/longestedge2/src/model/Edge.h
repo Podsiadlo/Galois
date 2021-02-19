@@ -48,8 +48,7 @@ public:
   void setBroken(bool isBroken) { Edge::broken = isBroken; }
   double getLength() const { return length; }
   pair<reference_wrapper<const Coordinates>,
-       reference_wrapper<const Coordinates>>
-  getNodes() const {
+       reference_wrapper<const Coordinates>> getNodes() const {
     return nodes.get();
   }
   Coordinates getMiddle() const {
@@ -61,7 +60,10 @@ public:
 
   static galois::optional<Coordinates> getCommonPoint(const Edge& edge1,
                                                       const Edge& edge2) {
-
+    if (edge1.isTriangle() || edge2.isTriangle()) {
+      fprintf(stderr, "Trying to get coords of triangle.");
+      exit(19);
+    }
     auto coordinates1 = edge1.getNodes().first.get();
     auto coordinates2 = edge1.getNodes().second.get();
     auto coordinates3 = edge2.getNodes().first.get();

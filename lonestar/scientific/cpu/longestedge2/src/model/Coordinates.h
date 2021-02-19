@@ -78,8 +78,12 @@ public:
   }
 
   std::string toString() const {
-    return std::to_string(x) + " " + std::to_string(y) + " " +
-           std::to_string(z);
+    return "(" + std::to_string(x) + ", " + std::to_string(y) + ", " +
+           std::to_string(z) + ")";
+  }
+
+  operator std::string () const {
+    return toString();
   }
 
   //! element wise add of x,y,z

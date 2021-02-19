@@ -42,8 +42,10 @@ TEST_CASE("Production1 simple Test") {
   //                         [](double, double) { return 0.; });
   production.execute(nodes[0], &coordsBag);
 
-  REQUIRE(countTriangles(graph) == 3);
-  REQUIRE(countUnbrokenEdges(graph) == 5);
+  CHECK(countTriangles(graph) == 3);
+  CHECK(countUnbrokenEdges(graph) == 5);
+
+  checkPostProductionCorrectness(graph, nodes[0]);
 }
 
 // TEST_CASE("Production1 complex Test") {
