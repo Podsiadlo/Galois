@@ -33,12 +33,12 @@ private:
   void fixTriangle(int toBreak, const Coordinates& hangingPoint,
                    vector<std::reference_wrapper<Edge>> edges,
                    vector<GNode> gNodes, GNode triangle) {
-    Coordinates& oppositePoint =
+    reference_wrapper<const Coordinates> oppositePoint =
         Edge::getCommonPoint(edges[firstOpposite(toBreak)],
                              edges[secondOpposite(toBreak)])
             .get();
     GNode newNode = graph->createAndAddNode(
-        Edge(oppositePoint, hangingPoint, false, version2D));
+        Edge(oppositePoint, std::cref(hangingPoint), false, version2D));
     GNode newTriangle1 = graph->createAndAddNode(Edge());
     GNode newTriangle2 = graph->createAndAddNode(Edge());
     graph->addEdge(triangle, newTriangle1);
@@ -65,7 +65,7 @@ private:
     triangle->getData().setToRefine(false);
   }
 
-  Coordinates getHangingCoordinates(int brokenEdge,
+  const Coordinates& getHangingCoordinates(int brokenEdge,
                                     const vector<GNode>& gNodes) const {
     const vector<GNode>& edgeHalves =
         graph->getGNodesFrom(gNodes[brokenEdge], false);
@@ -74,7 +74,7 @@ private:
     return hangingCoordinates.get();
   }
 
-  Coordinates breakEdge(int toBreak, Bag* bag,
+  const Coordinates& breakEdge(int toBreak, Bag* bag,
                         const vector<std::reference_wrapper<Edge>>& edges,
                         const vector<GNode>& gNodes) {
     Edge& edgeToBreak = edges[toBreak].get();

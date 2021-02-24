@@ -37,7 +37,7 @@ TEST_CASE("Production1 simple Test") {
   nodes[0]->getData().setToRefine(true);
   galois::UserContext<GNode> ctx;
   //  ConnectivityManager connManager{graph};
-  Production01 production{&graph};
+  Production01 production{&graph, true};
   //  ProductionState pState(connManager, nodes[5], false,
   //                         [](double, double) { return 0.; });
   production.execute(nodes[0], &coordsBag);

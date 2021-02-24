@@ -48,7 +48,8 @@ public:
   void setBroken(bool isBroken) { Edge::broken = isBroken; }
   double getLength() const { return length; }
   pair<reference_wrapper<const Coordinates>,
-       reference_wrapper<const Coordinates>> getNodes() const {
+       reference_wrapper<const Coordinates>>
+  getNodes() const {
     return nodes.get();
   }
   Coordinates getMiddle() const {
@@ -58,23 +59,26 @@ public:
             2.);
   }
 
-  static galois::optional<Coordinates> getCommonPoint(const Edge& edge1,
-                                                      const Edge& edge2) {
+  static galois::optional<reference_wrapper<const Coordinates>>
+  getCommonPoint(const Edge& edge1, const Edge& edge2) {
+
     if (edge1.isTriangle() || edge2.isTriangle()) {
       fprintf(stderr, "Trying to get coords of triangle.");
       exit(19);
     }
-    auto coordinates1 = edge1.getNodes().first.get();
-    auto coordinates2 = edge1.getNodes().second.get();
-    auto coordinates3 = edge2.getNodes().first.get();
-    auto coordinates4 = edge2.getNodes().second.get();
-    if (coordinates3 == coordinates1 || coordinates3 == coordinates2) {
+    auto coordinates1 = edge1.getNodes().first;
+    auto coordinates2 = edge1.getNodes().second;
+    auto coordinates3 = edge2.getNodes().first;
+    auto coordinates4 = edge2.getNodes().second;
+    if (coordinates3.get() == coordinates1.get() ||
+        coordinates3.get() == coordinates2.get()) {
       return galois::optional(coordinates3);
     }
-    if (coordinates4 == coordinates1 || coordinates4 == coordinates2) {
+    if (coordinates4.get() == coordinates1.get() ||
+        coordinates4.get() == coordinates2.get()) {
       return galois::optional(coordinates4);
     }
-    return galois::optional<Coordinates>();
+    return galois::optional<reference_wrapper<const Coordinates>>();
   }
 };
 
