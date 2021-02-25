@@ -176,8 +176,9 @@ int main(int argc, char** argv) {
   vector<Production0x*> productions{};
 //  Production01 production01 = Production01{&graphAdapter, version2D};
   Production01 production01{&graphAdapter, version2D};
+  Production02 production02{&graphAdapter, version2D};
   productions.emplace_back(&production01);
-  Production02 production02{&graphAdapter};
+  productions.emplace_back(&production02);
   galois::gInfo("Loop is being started...");
   //    afterStep(0, graph);
 //  galois::InsertBag<Coordinates> bag{};
