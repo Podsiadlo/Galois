@@ -34,6 +34,16 @@ public:
     return edges;
   }
 
+  GNode createTriangle(const GNode& edge1, const GNode& edge2,
+                       const GNode& edge3, const GNode& parent) {
+    GNode newTriangle = createAndAddNode(Edge());
+    graph->addEdge(parent, newTriangle);
+    graph->addEdge(newTriangle, edge1);
+    graph->addEdge(newTriangle, edge2);
+    graph->addEdge(newTriangle, edge3);
+    return newTriangle;
+  }
+
   void addEdge(GNode src, GNode dst) { graph->addEdge(src, dst); };
 
   Graph* getGraph() const { return graph; }

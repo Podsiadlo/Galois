@@ -20,6 +20,7 @@
 #include "utils/Utils.h"
 #include "readers/AsciiReader.h"
 #include "productions/Production01.h"
+#include "productions/Production0x.h"
 #include "conditions/DummyConditionChecker.h"
 #include "productions/Production02.h"
 
@@ -172,7 +173,10 @@ int main(int argc, char** argv) {
 //                                     &production4, &production5, &production6};
   DummyConditionChecker checker = DummyConditionChecker();
 
-  Production01 production01{&graphAdapter};
+  vector<Production0x*> productions{};
+//  Production01 production01 = Production01{&graphAdapter, version2D};
+  Production01 production01{&graphAdapter, version2D};
+  productions.emplace_back(&production01);
   Production02 production02{&graphAdapter};
   galois::gInfo("Loop is being started...");
   //    afterStep(0, graph);

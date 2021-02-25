@@ -2,6 +2,8 @@
 #define GALOIS_EDGE_H
 
 #include <vector>
+#include <functional>
+#include <galois/optional.h>
 #include "Coordinates.h"
 
 using namespace std;
@@ -66,10 +68,10 @@ public:
       fprintf(stderr, "Trying to get coords of triangle.");
       exit(19);
     }
-    auto coordinates1 = edge1.getNodes().first;
-    auto coordinates2 = edge1.getNodes().second;
-    auto coordinates3 = edge2.getNodes().first;
-    auto coordinates4 = edge2.getNodes().second;
+    reference_wrapper<const Coordinates> coordinates1 = edge1.getNodes().first;
+    reference_wrapper<const Coordinates> coordinates2 = edge1.getNodes().second;
+    reference_wrapper<const Coordinates> coordinates3 = edge2.getNodes().first;
+    reference_wrapper<const Coordinates> coordinates4 = edge2.getNodes().second;
     if (coordinates3.get() == coordinates1.get() ||
         coordinates3.get() == coordinates2.get()) {
       return galois::optional(coordinates3);
