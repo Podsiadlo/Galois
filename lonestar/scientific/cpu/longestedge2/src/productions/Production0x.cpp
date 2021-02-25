@@ -30,8 +30,7 @@ void Production0x::breakTriangle(int brokenEdgeIdx,
   GNode newNode = graph->createAndAddNode(
       Edge(oppositePoint, cref(hangingPoint), false, version2D));
 
-  const vector<GNode>& edgeHalves =
-      graph->getGNodesFrom(gNodes[brokenEdgeIdx], false);
+  const vector<GNode>& edgeHalves = graph->getGNodesFrom(gNodes[brokenEdgeIdx]);
   if (Edge::getCommonPoint(edgeHalves[0]->getData(),
                            edges[firstAdjacent(brokenEdgeIdx)])
       .is_initialized()) {

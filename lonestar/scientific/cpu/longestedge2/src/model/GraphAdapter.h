@@ -13,13 +13,10 @@ public:
     }
   }
 
-  std::vector<GNode> getGNodesFrom(GNode parent, bool triangles) const {
+  std::vector<GNode> getGNodesFrom(GNode parent) const {
     std::vector<GNode> vertices;
     for (const auto& edge : graph->out_edges(parent)) {
-      auto* neighbour = graph->getEdgeDst(edge);
-      if (neighbour->getData().isTriangle() == triangles) {
-        vertices.emplace_back(neighbour);
-      }
+      vertices.emplace_back(graph->getEdgeDst(edge));
     }
     return vertices;
   }

@@ -17,7 +17,7 @@ public:
   using Production0x::Production0x;
 
   bool execute(const GNode& triangle, Bag* /*bag*/) {
-    auto gNodes = graph->getGNodesFrom(triangle, false);
+    auto gNodes = graph->getGNodesFrom(triangle);
     auto edges  = graph->getEdges(gNodes);
 
     int toBreak = chooseEdge(triangle->getData(), edges);
@@ -33,8 +33,7 @@ private:
 
   const Coordinates& getHangingCoordinates(int brokenEdge,
                                     const vector<GNode>& gNodes) const {
-    const vector<GNode>& edgeHalves =
-        graph->getGNodesFrom(gNodes[brokenEdge], false);
+    const vector<GNode>& edgeHalves = graph->getGNodesFrom(gNodes[brokenEdge]);
     auto hangingCoordinates = Edge::getCommonPoint(edgeHalves[0]->getData(),
                                                    edgeHalves[1]->getData());
     return hangingCoordinates.get();

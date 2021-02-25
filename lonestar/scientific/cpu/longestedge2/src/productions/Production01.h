@@ -12,7 +12,7 @@ public:
   using Production0x::Production0x;
 
   bool execute(const GNode& triangle, Bag* bag) {
-    auto gNodes = graph->getGNodesFrom(triangle, false);
+    auto gNodes = graph->getGNodesFrom(triangle);
     auto edges  = graph->getEdges(gNodes);
 
     int edgeToBreakIdx = chooseEdge(triangle->getData(), edges);

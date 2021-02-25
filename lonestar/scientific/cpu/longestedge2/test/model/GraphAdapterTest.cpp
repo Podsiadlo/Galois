@@ -25,7 +25,7 @@ TEST_CASE("GraphAdapter::getGNodesFrom simple test") {
   graph.addEdge(mainNode, childNode1);
   graph.addEdge(mainNode, childNode2);
 
-  auto childrenNodes = graphAdapter.getGNodesFrom(mainNode, true);
+  auto childrenNodes = graphAdapter.getGNodesFrom(mainNode);
 
   REQUIRE(childrenNodes.size() == 2);
   CHECK(childrenNodes[0]->getData().isBroken() == true);
