@@ -5,14 +5,18 @@
 
 class GraphAdapter : private boost::noncopyable {
 public:
-  GraphAdapter() : graph(new Graph{}) {}
+  GraphAdapter() : graph(new Graph{}), selfConstructedGraph(true) {}
   GraphAdapter(Graph* graph) : graph(graph) {}
-  virtual ~GraphAdapter() { delete graph; }
+  virtual ~GraphAdapter() {
+    if (selfConstructedGraph) {
+      delete graph;
+    }
+  }
 
   std::vector<GNode> getGNodesFrom(GNode parent, bool triangles) const {
     std::vector<GNode> vertices;
-    for(auto edge : graph->out_edges(parent)) {
-      auto neighbour = graph->getEdgeDst(edge);
+    for (const auto& edge : graph->out_edges(parent)) {
+      auto* neighbour = graph->getEdgeDst(edge);
       if (neighbour->getData().isTriangle() == triangles) {
         vertices.emplace_back(neighbour);
       }
@@ -26,7 +30,8 @@ public:
     return node;
   }
 
-  std::vector<std::reference_wrapper<Edge>> getEdges(const std::vector<GNode>& gNodes) const {
+  std::vector<std::reference_wrapper<Edge>>
+  getEdges(const std::vector<GNode>& gNodes) const {
     std::vector<std::reference_wrapper<Edge>> edges;
     for (GNode gNode : gNodes) {
       edges.emplace_back(gNode->getData());
@@ -50,6 +55,7 @@ public:
 
 private:
   Graph* graph;
+  bool selfConstructedGraph{false};
 };
 
 #endif // GALOIS_GRAPHADAPTER_H

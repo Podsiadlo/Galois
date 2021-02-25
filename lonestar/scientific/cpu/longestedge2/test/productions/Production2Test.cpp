@@ -1,5 +1,3 @@
-#include "../testUtils.cpp"
-#include "../../src/model/GraphAdapter.h"
 #include "../../src/productions/Production02.h"
 
 std::vector<GNode> prepareTest2Graph(GraphAdapter* graph,
