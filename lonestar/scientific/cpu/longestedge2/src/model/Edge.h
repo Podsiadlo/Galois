@@ -20,7 +20,7 @@ private:
 
   galois::optional<pair<reference_wrapper<const Coordinates>,
                         reference_wrapper<const Coordinates>>>
-      nodes;
+      nodes; //It is required that first <= second
 
   double length{-1};
 
@@ -33,13 +33,17 @@ public:
        reference_wrapper<const Coordinates> coordinates2, bool border,
        bool version2D)
       : triangle(false), border(border),
-        nodes(make_pair(cref(coordinates1), cref(coordinates2))),
+        nodes(coordinates1.get() <= coordinates2.get()
+                  ? make_pair(coordinates1, coordinates2)
+                  : make_pair(coordinates2, coordinates1)),
         length(coordinates1.get().dist(coordinates2.get(), version2D)) {}
 
   Edge(const Coordinates& coordinates1, const Coordinates& coordinates2,
        bool border, bool version2D)
       : triangle(false), border(border),
-        nodes(make_pair(cref(coordinates1), cref(coordinates2))),
+        nodes(coordinates1 <= coordinates2
+                  ? make_pair(cref(coordinates1), cref(coordinates2))
+                  : make_pair(cref(coordinates2), cref(coordinates1))),
         length(coordinates1.dist(coordinates2, version2D)) {}
 
   bool isTriangle() const { return triangle; }
@@ -81,6 +85,19 @@ public:
       return galois::optional(coordinates4);
     }
     return galois::optional<reference_wrapper<const Coordinates>>();
+  }
+
+  bool operator<(const Edge& rhs) {
+    if (isBorder() != rhs.isBorder()) {
+      return isBorder();
+    }
+    if (nodes->first.get() < rhs.nodes->first.get()) {
+      return true;
+    }
+    if (nodes->first.get() != rhs.nodes->first.get()) {
+      return false;
+    }
+    return nodes->second.get() < rhs.nodes->second.get();
   }
 };
 

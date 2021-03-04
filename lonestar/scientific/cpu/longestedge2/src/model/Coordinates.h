@@ -58,9 +58,8 @@ public:
   double dist(const Coordinates& rhs, bool version2D) const {
     if (version2D) {
       return dist2D(rhs);
-    } else {
-      return dist3D(rhs);
     }
+    return dist3D(rhs);
   }
 
   //! Take z into account for distance
@@ -73,7 +72,7 @@ public:
     return sqrt(pow(x - rhs.x, 2) + pow(y - rhs.y, 2));
   }
 
-  bool isXYequal(const Coordinates& rhs) {
+  bool isXYequal(const Coordinates& rhs) const {
     return equals(x, rhs.x) && equals(y, rhs.y);
   }
 
@@ -116,14 +115,18 @@ public:
 
   //! Less than check; checks x, y, z in that order
   bool operator<(const Coordinates& rhs) const {
-    if (less(x, rhs.x))
+    if (less(x, rhs.x)) {
       return true;
-    if (less(rhs.x, x))
+    }
+    if (less(rhs.x, x)) {
       return false;
-    if (less(y, rhs.y))
+    }
+    if (less(y, rhs.y)) {
       return true;
-    if (less(rhs.y, y))
+    }
+    if (less(rhs.y, y)) {
       return false;
+    }
     return less(z, rhs.z);
   }
 

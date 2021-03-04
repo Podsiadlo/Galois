@@ -1,3 +1,4 @@
+#include <set>
 #include "ProductionHelpers.h"
 
 std::vector<int> getLongest(const vector<std::reference_wrapper<Edge>>& edges) {
@@ -18,21 +19,22 @@ std::vector<int> getLongest(const vector<std::reference_wrapper<Edge>>& edges) {
 }
 int chooseGreatest(std::vector<int> toBreak,
                    const vector<std::reference_wrapper<Edge>>& edges) {
-  std::vector<int> result{};
-  if (edges.size() == 0) {
+  auto comparator = [&edges](int a, int b) {
+    return edges[a].get() < edges[b].get();
+  };
+  std::set<int, decltype(comparator)> result(comparator);
+  if (edges.empty()) {
     return -1;
   }
-  for (auto i = toBreak.begin(); i!=toBreak.end() ; ++i) {
-    if (edges[*i].get().isBorder()) {
-      result.emplace_back(*i);
+  for (int & i : toBreak) {
+    if (edges[i].get().isBorder()) {
+      result.insert(i);
     }
   }
-  if (result.size() > 1 || result.size() == 0) {
-    //TODO: porownaj wspolrzedne
-  } else {
-    return result[0];
+  if (result.empty()) {
+    result.insert(toBreak.begin(), toBreak.end());
   }
-  return toBreak[0];
+  return *result.rbegin(); //C++ standard guarantees a set is ordered
 }
 
 bool isAnyBroken(std::vector<std::reference_wrapper<Edge>> edges) {
