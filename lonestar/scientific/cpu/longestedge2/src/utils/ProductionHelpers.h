@@ -7,7 +7,7 @@ std::vector<int> getLongest(const std::vector<std::reference_wrapper<Edge>>& edg
 
 int chooseGreatest(std::vector<int> toBreak, const std::vector<std::reference_wrapper<Edge>>& edges);
 
-bool isAnyBroken(const std::vector<std::reference_wrapper<Edge>> edges);
+bool isAnyBroken(const std::vector<std::reference_wrapper<Edge>>& edges);
 
 
 

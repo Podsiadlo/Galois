@@ -11,7 +11,7 @@ class Production01 : public Production0x {
 public:
   using Production0x::Production0x;
 
-  bool execute(const GNode& triangle, Bag* bag) {
+  bool execute(const GNode& triangle, Bag* bag) override {
     auto gNodes = graph->getGNodesFrom(triangle);
     auto edges  = graph->getEdges(gNodes);
 
@@ -35,9 +35,11 @@ private:
     }
     const vector<int>& longest = getLongest(edges);
     vector<int> toBreak;
-    for (auto edge : longest) {
+    for (int edge : longest) {
       if (!edges[edge].get().isBroken()) {
         toBreak.push_back(edge);
+      } else {
+        return -1;
       }
     }
     return chooseGreatest(toBreak, edges);

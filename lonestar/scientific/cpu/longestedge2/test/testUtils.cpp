@@ -1,37 +1,77 @@
 #ifndef GALOIS_TEST_UTILS
 #define GALOIS_TEST_UTILS
 
-//#include "../src/utils/ConnectivityManager.h"
-
 #include "../src/model/GraphAdapter.h"
 
-// std::vector<GNode> generateSampleGraph(Graph& graph) {
-//  std::vector<GNode> nodes;
-//  ConnectivityManager connManager{graph};
-//  nodes.push_back(
-//      connManager.createNode(NodeData{false, Coordinates{0, 0, 0}, false}));
-//  nodes.push_back(
-//      connManager.createNode(NodeData{false, Coordinates{0, 1, 0}, false}));
-//  nodes.push_back(
-//      connManager.createNode(NodeData{false, Coordinates{1, 0, 0}, false}));
-//  nodes.push_back(
-//      connManager.createNode(NodeData{false, Coordinates{1, 1, 0}, false}));
-//
-//  connManager.createEdge(nodes[0], nodes[1], true, Coordinates{0, 0.5, 0}, 1);
-//  connManager.createEdge(nodes[1], nodes[3], true, Coordinates{0.5, 1, 0}, 1);
-//  connManager.createEdge(nodes[2], nodes[3], true, Coordinates{1, 0.5, 0}, 1);
-//  connManager.createEdge(nodes[0], nodes[2], true, Coordinates{0.5, 0, 0}, 1);
-//  connManager.createEdge(nodes[3], nodes[0], false, Coordinates{0.5, 0.5, 0},
-//                         sqrt(2));
-//
-//  nodes.push_back(connManager.createInterior(nodes[0], nodes[1], nodes[3]));
-//  nodes.push_back(connManager.createInterior(nodes[0], nodes[3], nodes[2]));
-//  return nodes;
-//}
 void checkTriangleCorrectness(GNode const& parent,
                               set<Coordinates>& triangleCoords,
                               vector<GNode>& childrenTriangles,
                               vector<GNode>& edges, const GraphAdapter& graph);
+
+std::vector<GNode>
+prepareTest1Graph(GraphAdapter* graph,
+                  galois::InsertBag<Coordinates>* coordsBag) {
+  std::vector<std::reference_wrapper<const Coordinates>> coords;
+
+  coords.emplace_back(std::cref(coordsBag->emplace_back(Coordinates(0, 0, 0))));
+  coords.emplace_back(std::cref(coordsBag->emplace_back(Coordinates(0, 1, 0))));
+  coords.emplace_back(std::cref(coordsBag->emplace_back(Coordinates(1, 0, 0))));
+  std::vector<Edge> edges{};
+
+  edges.emplace_back(Edge{coords[0], coords[1], true, true});
+  edges.emplace_back(Edge{coords[0], coords[2], true, true});
+  edges.emplace_back(Edge{coords[1], coords[2], true, true});
+
+  std::vector<GNode> gNodes{};
+  gNodes.emplace_back(graph->createAndAddNode(Edge()));
+  gNodes.emplace_back(graph->createAndAddNode(edges[0]));
+  gNodes.emplace_back(graph->createAndAddNode(edges[1]));
+  gNodes.emplace_back(graph->createAndAddNode(edges[2]));
+
+  graph->addEdge(gNodes[0], gNodes[1]);
+  graph->addEdge(gNodes[0], gNodes[2]);
+  graph->addEdge(gNodes[0], gNodes[3]);
+
+  return gNodes;
+}
+
+std::vector<GNode>
+prepareTest2Graph(GraphAdapter* graph,
+                  galois::InsertBag<Coordinates>* coordsBag) {
+  std::vector<std::reference_wrapper<const Coordinates>> coords;
+
+  coords.emplace_back(std::cref(coordsBag->emplace_back(Coordinates(0, 0, 0))));
+  coords.emplace_back(std::cref(coordsBag->emplace_back(Coordinates(0, 1, 0))));
+  coords.emplace_back(std::cref(coordsBag->emplace_back(Coordinates(1, 0, 0))));
+  coords.emplace_back(
+      std::cref(coordsBag->emplace_back(Coordinates(0.5, 0.5, 0))));
+  std::vector<Edge> edges{};
+
+  edges.emplace_back(Edge{coords[0], coords[1], true, true});
+  edges.emplace_back(Edge{coords[0], coords[2], true, true});
+  edges.emplace_back(Edge{coords[1], coords[2], true, true});
+  edges.emplace_back(Edge{coords[1], coords[3], true, true});
+  edges.emplace_back(Edge{coords[2], coords[3], true, true});
+
+  edges[2].setBroken(true);
+
+  std::vector<GNode> gNodes{};
+  gNodes.emplace_back(graph->createAndAddNode(Edge()));
+  gNodes.emplace_back(graph->createAndAddNode(edges[0]));
+  gNodes.emplace_back(graph->createAndAddNode(edges[1]));
+  gNodes.emplace_back(graph->createAndAddNode(edges[2]));
+  gNodes.emplace_back(graph->createAndAddNode(edges[3]));
+  gNodes.emplace_back(graph->createAndAddNode(edges[4]));
+
+  graph->addEdge(gNodes[0], gNodes[1]);
+  graph->addEdge(gNodes[0], gNodes[2]);
+  graph->addEdge(gNodes[0], gNodes[3]);
+
+  graph->addEdge(gNodes[3], gNodes[4]);
+  graph->addEdge(gNodes[3], gNodes[5]);
+
+  return gNodes;
+}
 
 int countTriangles(const GraphAdapter& graph) {
   int counter = 0;
@@ -56,7 +96,6 @@ int countUnbrokenEdges(const GraphAdapter& graph) {
 
 void checkPostProductionCorrectness(const GraphAdapter& graph,
                                     const GNode& parent) {
-  //  std::vector<GNode> childrenNodes{};
   vector<GNode> childrenTriangles{};
   vector<GNode> edges{};
   set<Coordinates> parentTriangleCoords{};
@@ -89,7 +128,6 @@ void checkPostProductionCorrectness(const GraphAdapter& graph,
     }
   }
 }
-
 void checkTriangleCorrectness(GNode const& parent,
                               set<Coordinates>& triangleCoords,
                               vector<GNode>& childrenTriangles,

@@ -37,7 +37,7 @@ int chooseGreatest(std::vector<int> toBreak,
   return *result.rbegin(); //C++ standard guarantees a set is ordered
 }
 
-bool isAnyBroken(std::vector<std::reference_wrapper<Edge>> edges) {
+bool isAnyBroken(const std::vector<std::reference_wrapper<Edge>>& edges) {
   bool result = false;
   for (auto edge: edges) {
     result = result || edge.get().isBroken();

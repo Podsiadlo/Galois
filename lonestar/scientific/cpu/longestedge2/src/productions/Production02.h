@@ -16,7 +16,7 @@ private:
 public:
   using Production0x::Production0x;
 
-  bool execute(const GNode& triangle, Bag* /*bag*/) {
+  bool execute(const GNode& triangle, Bag* /*bag*/) override {
     auto gNodes = graph->getGNodesFrom(triangle);
     auto edges  = graph->getEdges(gNodes);
 
