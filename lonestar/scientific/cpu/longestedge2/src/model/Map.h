@@ -29,14 +29,15 @@ private:
 
   char hemisphere;
 
-  double get_height_wo_interpol(const double lon, const double lat,
-                                const int corner) const ;
+  double get_height_wo_interpol(double lon, double lat, int corner) const;
 
 public:
   Map(double** data, size_t width, size_t length, double cellWidth,
-      double cellLength)
+      double cellLength, bool utm)
       : width(width), length(length), cell_width(cellWidth),
-        cell_length(cellLength), data(data), utm(true), zone(-1) {}
+        cell_length(cellLength), data(data),
+        north_border((length - 1) * cellLength), west_border(0.), utm(utm),
+        zone(-1) {}
 
   static double** init_map_data(size_t rows, size_t cols);
 
@@ -70,9 +71,17 @@ public:
 
   void setNorthBorder(double northBorder) { north_border = northBorder; }
 
+  double getSouthBorder() const {
+    return north_border - (length - 1) * cell_length;
+  }
+
   double getWestBorder() const { return west_border; }
 
   void setWestBorder(double westBorder) { west_border = westBorder; }
+
+  double getEastBorder() const {
+    return west_border + (width - 1) * cell_width;
+  }
 
   bool isUtm() const { return utm; }
 

@@ -227,15 +227,8 @@ public:
                        galois::InsertBag<Coordinates>* coordsBag,
                        Map* map) {
 
-    std::vector<std::reference_wrapper<const Coordinates>> coords;
-    coords.emplace_back(std::cref(
-        coordsBag->emplace_back(Coordinates(Utils::convertToUtm(south_border, west_border, map), *map))));
-    coords.emplace_back(std::cref(
-        coordsBag->emplace_back(Coordinates{Utils::convertToUtm(south_border, east_border, map), *map})));
-    coords.emplace_back(std::cref(
-        coordsBag->emplace_back(Coordinates{Utils::convertToUtm(north_border, east_border, map), *map})));
-    coords.emplace_back(std::cref(
-        coordsBag->emplace_back(Coordinates{Utils::convertToUtm(north_border, west_border, map), *map})));
+    vector<reference_wrapper<const Coordinates>> coords = prepareCoordsVector(
+        west_border, north_border, east_border, south_border, coordsBag, map);
     std::vector<Edge> edges{};
 
     edges.emplace_back(Edge{coords[0], coords[2], true, version2D});
@@ -258,6 +251,33 @@ public:
   }
 
 private:
+  static vector<reference_wrapper<const Coordinates>>
+  prepareCoordsVector(const double west_border, const double north_border,
+                      const double east_border, const double south_border,
+                      galois::InsertBag<Coordinates>* coordsBag, Map* map) {
+    vector<reference_wrapper<const Coordinates>> coords;
+    if (map->isUtm()) {
+      coords.emplace_back(cref(coordsBag->emplace_back(Coordinates(
+          Utils::convertToUtm(south_border, west_border, map), *map))));
+      coords.emplace_back(cref(coordsBag->emplace_back(Coordinates{
+          Utils::convertToUtm(south_border, east_border, map), *map})));
+      coords.emplace_back(cref(coordsBag->emplace_back(Coordinates{
+          Utils::convertToUtm(north_border, east_border, map), *map})));
+      coords.emplace_back(cref(coordsBag->emplace_back(Coordinates{
+          Utils::convertToUtm(north_border, west_border, map), *map})));
+    } else {
+      coords.emplace_back(cref(coordsBag->emplace_back(Coordinates(
+          west_border, south_border, *map))));
+      coords.emplace_back(cref(coordsBag->emplace_back(Coordinates{
+          east_border, south_border, *map})));
+      coords.emplace_back(cref(coordsBag->emplace_back(Coordinates{
+          east_border, north_border, *map})));
+      coords.emplace_back(cref(coordsBag->emplace_back(Coordinates{
+          west_border, north_border, *map})));
+    }
+    return coords;
+  }
+
   static void connectTriangle(size_t triangleNodeNo,
                               const std::vector<size_t>& edgeNodeNos,
                               const vector<GNode>& gNodes,

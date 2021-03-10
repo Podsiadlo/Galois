@@ -124,7 +124,7 @@ Map* AsciiReader::read(const std::string filename) {
     }
   }
 
-  Map* map = convert(coords, nRows, nCols);
+  Map* map = convert(coords, nRows, nCols, cellSize);
 
   for (size_t k = 0; k < numOfPoints; ++k) {
     free(coords[k]);
@@ -133,13 +133,14 @@ Map* AsciiReader::read(const std::string filename) {
   return map;
 }
 
-Map* AsciiReader::convert(double** coords, size_t nRows, size_t nCols) {
+Map* AsciiReader::convert(double** coords, size_t nRows, size_t nCols,
+                          double cellSize) {
   double** map_data = Map::init_map_data(nRows, nCols);
   for (size_t k = 0; k < nRows; ++k) {
     for (size_t i = 0; i < nCols; ++i) {
       map_data[k][i] = coords[k * nCols + i][2];
     }
   }
-  Map* map = new Map(map_data, nCols, nRows, 1, 1);
+  Map* map = new Map(map_data, nCols, nRows, cellSize, cellSize, false);
   return map;
 }

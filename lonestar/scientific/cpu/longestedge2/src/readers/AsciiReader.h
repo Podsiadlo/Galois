@@ -14,7 +14,8 @@ private:
   static int readLine(FILE* f, char* buffer, const size_t buffersize,
                       size_t* line_number);
 
-  static Map* convert(double** coords, const size_t nRows, const size_t nCols);
+  static Map* convert(double** coords, size_t nRows, size_t nCols,
+                      double cellSize);
 };
 
 #endif // ASC_READER_H

@@ -4,13 +4,6 @@
 #include "model/Graph.h"
 #include "model/Map.h"
 #include "model/ProductionState.h"
-//#include "productions/Production.h"
-//#include "productions/Production1.h"
-//#include "productions/Production2.h"
-//#include "productions/Production3.h"
-//#include "productions/Production4.h"
-//#include "productions/Production5.h"
-//#include "productions/Production6.h"
 #include "readers/InpReader.h"
 #include "readers/SrtmReader.h"
 //#include "writers/InpWriter.h"
@@ -19,10 +12,10 @@
 #include "utils/GraphGenerator.h"
 #include "utils/Utils.h"
 #include "readers/AsciiReader.h"
-#include "productions/Production01.h"
 #include "productions/Production0x.h"
-#include "conditions/DummyConditionChecker.h"
+#include "productions/Production01.h"
 #include "productions/Production02.h"
+#include "conditions/DummyConditionChecker.h"
 
 #include <Lonestar/BoilerPlate.h>
 
@@ -73,7 +66,7 @@ static cll::opt<bool> altOutput(
 static cll::opt<bool> display("display",
                               cll::desc("Use external visualizator."));
 
-void afterStep(int i, Graph& graph);
+void afterStep(int, Graph&);
 
 bool basicCondition(const Graph& graph, GNode& node);
 
@@ -106,9 +99,9 @@ int main(int argc, char** argv) {
     if (ascii) {
       AsciiReader reader;
       map = reader.read(asciiFile);
-//      GraphGenerator::generateSampleGraphWithData(
-//          graph, *map, 0, map->getRegionLength(), map->getRegionWidth(), 0,
-//          version2D);
+      GraphGenerator::prepareSimplestGraph(
+          map->getWestBorder(), map->getNorthBorder(), map->getEastBorder(),
+          map->getSouthBorder(), version2D, &graphAdapter, &coordsBag, map);
     } else {
       SrtmReader reader;
       // terrain setup:  load terrain heights into the map object
@@ -163,12 +156,6 @@ int main(int argc, char** argv) {
   //    DummyConditionChecker checker = DummyConditionChecker();
 //  TerrainConditionChecker checker =
 //      TerrainConditionChecker(tolerance, connManager, *map);
-//  Production1 production1{connManager};
-//  Production2 production2{connManager};
-//  Production3 production3{connManager};
-//  Production4 production4{connManager};
-//  Production5 production5{connManager};
-//  Production6 production6{connManager};
 //  vector<Production*> productions = {&production1, &production2, &production3,
 //                                     &production4, &production5, &production6};
   DummyConditionChecker checker = DummyConditionChecker();
