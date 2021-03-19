@@ -14,11 +14,7 @@ public:
   }
 
   std::vector<GNode> getGNodesFrom(GNode parent) const {
-    std::vector<GNode> vertices;
-    for (const auto& edge : graph->out_edges(parent)) {
-      vertices.emplace_back(graph->getEdgeDst(edge));
-    }
-    return vertices;
+    return getGNodesFrom(parent, graph);
   }
 
   GNode createAndAddNode(const Edge& nodeData) {
@@ -49,6 +45,14 @@ public:
   void addEdge(GNode src, GNode dst) { graph->addEdge(src, dst); };
 
   Graph* getGraph() const { return graph; }
+
+  static std::vector<GNode> getGNodesFrom(GNode parent, Graph* graph) {
+    std::vector<GNode> vertices;
+    for (const auto& edge : graph->out_edges(parent)) {
+      vertices.emplace_back(graph->getEdgeDst(edge));
+    }
+    return vertices;
+  }
 
 private:
   Graph* graph;

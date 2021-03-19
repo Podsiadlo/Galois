@@ -6,6 +6,7 @@
 #include "model/ProductionState.h"
 #include "readers/InpReader.h"
 #include "readers/SrtmReader.h"
+#include "writers/AvsUcdWriter.h"
 //#include "writers/InpWriter.h"
 //#include "writers/TriangleFormatWriter.h"
 #include "utils/ConnectivityManager.h"

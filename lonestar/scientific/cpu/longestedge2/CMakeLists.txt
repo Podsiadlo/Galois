@@ -7,7 +7,7 @@ set(SOURCES src/model/Map.cpp
         #[[src/writers/TriangleFormatWriter.cpp]] src/model/Edge.h
         src/productions/Production01.h src/productions/Production0x.cpp
         src/model/GraphAdapter.cpp src/model/GraphAdapter.h src/utils/ProductionHelpers.cpp
-        src/productions/Production02.h  ${LIBMGRS})
+        src/productions/Production02.h src/writers/AvsUcdWriter.cpp ${LIBMGRS})
 
 add_executable(longestedge2-cpu src/LongestEdge2.cpp ${SOURCES})
 
