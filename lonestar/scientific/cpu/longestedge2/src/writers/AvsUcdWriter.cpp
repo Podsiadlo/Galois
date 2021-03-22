@@ -1,3 +1,4 @@
+#include <fstream>
 #include "AvsUcdWriter.h"
 
 AvsUcdWriter::Segment::Segment(size_t firstPoint, size_t secondPoint,
@@ -18,7 +19,6 @@ bool AvsUcdWriter::Segment::operator<(const AvsUcdWriter::Segment& rhs) const {
          pointIds.second < rhs.pointIds.second;
 }
 
-
 AvsUcdWriter::Triangle::Triangle(size_t firstEdge, size_t secondEdge,
                                  std::size_t thirdEdge, int materialId)
     : materialId(materialId) {
@@ -28,7 +28,8 @@ AvsUcdWriter::Triangle::Triangle(size_t firstEdge, size_t secondEdge,
   std::sort(edges.begin(), edges.end());
 }
 
-bool AvsUcdWriter::Triangle::operator<(const AvsUcdWriter::Triangle& rhs) {
+bool AvsUcdWriter::Triangle::operator<(
+    const AvsUcdWriter::Triangle& rhs) const {
   if (edges[0] < rhs.edges[0]) {
     return true;
   }
@@ -40,7 +41,6 @@ bool AvsUcdWriter::Triangle::operator<(const AvsUcdWriter::Triangle& rhs) {
   }
   return false;
 }
-
 
 void AvsUcdWriter::fillMaps() {
   size_t pointCounter     = 1;
@@ -60,10 +60,11 @@ void AvsUcdWriter::fillMaps() {
 
 AvsUcdWriter::Segment AvsUcdWriter::convertToSegment(const Edge& edge,
                                                      size_t* pointCounter) {
-  int materialId         = calculateSegmentMaterialId(edge);
-  const Segment& segment = Segment{putOrGetIndex(edge.getNodes().first.get(), points, pointCounter),
-                                   putOrGetIndex(putOrGetIndex(edge.getNodes().second.get(), points, pointCounter),
-                                                 materialId};
+  int materialId = calculateSegmentMaterialId(edge);
+  const Segment& segment{
+      putOrGetIndex(edge.getNodes().first.get(), points, pointCounter),
+      putOrGetIndex(edge.getNodes().second.get(), points, pointCounter),
+      materialId};
   return segment;
 }
 
@@ -73,24 +74,22 @@ int AvsUcdWriter::calculateSegmentMaterialId(const Edge& edge) const {
   return materialId;
 }
 
-AvsUcdWriter::Triangle AvsUcdWriter::convertToTriangle(GNode node,
+AvsUcdWriter::Triangle AvsUcdWriter::convertToTriangle(const GNode& node,
                                                        size_t* pointCounter,
                                                        size_t* segmentCounter) {
-  const vector<GNode>& childNodes =
-      GraphAdapter::getGNodesFrom(node, graph);
+  const vector<GNode>& childNodes = GraphAdapter::getGNodesFrom(node, graph);
   std::vector<Segment> childSegments;
   for (auto* childNode : childNodes) {
     const Edge& childEdge = childNode->getData();
     if (!childEdge.isTriangle()) {
-      childSegments.emplace_back(
-          convertToSegment(childEdge, pointCounter));
+      childSegments.emplace_back(convertToSegment(childEdge, pointCounter));
     }
   }
   int materialId = 0;
-  Triangle triangle{
-      putOrGetIndex(childSegments[0], segments, segmentCounter),
-      putOrGetIndex(childSegments[1], segments, segmentCounter),
-      putOrGetIndex(childSegments[2], segments, segmentCounter), materialId};
+  Triangle triangle{putOrGetIndex(childSegments[0], segments, segmentCounter),
+                    putOrGetIndex(childSegments[1], segments, segmentCounter),
+                    putOrGetIndex(childSegments[2], segments, segmentCounter),
+                    materialId};
   return triangle;
 }
 
@@ -103,4 +102,32 @@ size_t AvsUcdWriter::putOrGetIndex(const T& element, map<T, size_t>& elements,
     return (*counter)++;
   }
   return foundIterator->second;
+}
+void AvsUcdWriter::writeToFile(const string& filename) {
+  ofstream file;
+  file.open(filename, ios::out);
+
+  file << points.size() << " " << segments.size() /*+ triangles.size()*/ << " 0 0 0"//FIXME
+       << endl;
+
+  for (auto pointEntry : points) {
+    auto& coordinates = pointEntry.first;
+    file << pointEntry.second << " " << coordinates.getX() << " "
+         << coordinates.getY() << " " << coordinates.getZ() << endl;
+  }
+
+  for(auto segmentEntry : segments) {
+    auto& segment = segmentEntry.first;
+    file << segmentEntry.second << " " << segment.materialId << " line " << segment.pointIds.first << " " << segment.pointIds.second << endl;
+  }
+
+//  for(auto triangleEntry : triangles) {
+//    auto& triangle = triangleEntry.first;
+//    file << segments.size() + triangleEntry.second << " " << triangle.materialId << " tri";
+//    for(auto point : triangle.edges) { //FIXME
+//      file << " " << point;
+//    }
+//  }
+
+  file.close();
 }

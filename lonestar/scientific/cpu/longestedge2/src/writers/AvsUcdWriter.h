@@ -22,7 +22,7 @@ private:
     Triangle(size_t firstEdge, size_t secondEdge, std::size_t thirdEdge,
              int materialId);
 
-    bool operator<(const Triangle& rhs);
+    bool operator<(const Triangle& rhs) const;
   };
 
   Graph* graph;
@@ -38,15 +38,18 @@ public:
 
   void write(const std::string& filename) {
     fillMaps();
-
+    writeToFile(filename);
   }
 
 private:
   void fillMaps();
 
+  void writeToFile(const string& filename);
+
   Segment convertToSegment(const Edge& edge, size_t* pointCounter);
 
-  Triangle convertToTriangle(const GNode node, size_t* pointCounter, size_t* segmentCounter);
+  Triangle convertToTriangle(const GNode& node, size_t* pointCounter,
+                             size_t* segmentCounter);
 
   int calculateSegmentMaterialId(const Edge& edge) const;
 

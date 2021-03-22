@@ -168,7 +168,7 @@ int main(int argc, char** argv) {
   productions.emplace_back(&production01);
   productions.emplace_back(&production02);
   galois::gInfo("Loop is being started...");
-  //    afterStep(0, graph);
+  afterStep(-1, graph);
 //  galois::InsertBag<Coordinates> bag{};
   for (int j = 0; j < steps; j++) {
     galois::for_each(galois::iterate(graph.begin(), graph.end()),
@@ -228,11 +228,13 @@ int main(int argc, char** argv) {
             if (!production01.execute(node, &coordsBag)) {
               production02.execute(node, &coordsBag);
             }
+
           },
           galois::loopname(("step" + std::to_string(j)).c_str()));
     }
 
     step.stop();
+    afterStep(j, graph);
     galois::gInfo("Step ", j, " finished.");
   }
   galois::gInfo("All steps finished.");
@@ -264,5 +266,6 @@ bool basicCondition(const Graph& graph, GNode& node) {
 
 //! Writes intermediate data to file
 void afterStep(int GALOIS_UNUSED(step), Graph& GALOIS_UNUSED(graph)) {
-//  inpWriter(output + "_s" + std::to_string(step) + ".inp", graph);
+  AvsUcdWriter writer{&graph};
+  writer.write(output + "_s" + std::to_string(step) + ".inp");
 }
