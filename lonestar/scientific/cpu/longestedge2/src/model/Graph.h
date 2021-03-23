@@ -2,8 +2,6 @@
 #define GALOIS_GRAPH_H
 
 #include <galois/graphs/MorphGraph.h>
-#include "NodeData.h"
-#include "EdgeData.h"
 #include "Edge.h"
 
 using Graph        = galois::graphs::MorphGraph<Edge, void, true, false>;

@@ -3,7 +3,6 @@
 
 //#include <galois/UserContext.h>
 #include "../model/Graph.h"
-#include "../model/ProductionState.h"
 #include "../model/Edge.h"
 #include "../model/GraphAdapter.h"
 #include "../utils/ProductionHelpers.h"
