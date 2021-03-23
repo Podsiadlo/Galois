@@ -7,8 +7,8 @@
 //#include "../utils/ProductionHelpers.h"
 class Production0x {
 public:
-  explicit Production0x(GraphAdapter* graph, bool version2D)
-      : graph(graph), version2D(version2D) {}
+  explicit Production0x(GraphAdapter* graph, bool version2D, const Map& map)
+      : graph(graph), version2D(version2D), map(map) {}
 
   virtual bool execute(const GNode& triangle, Bag* bag) = 0;
 
@@ -25,6 +25,7 @@ protected:
 
 private:
   bool version2D;
+  const Map& map;
 
   int firstAdjacent(int broken) const { return (broken + 1) % 3; }
   int secondAdjacent(int broken) const { return (broken + 2) % 3; }

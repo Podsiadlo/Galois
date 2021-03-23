@@ -58,11 +58,12 @@ public:
   getNodes() const {
     return nodes.get();
   }
-  Coordinates getMiddle() const {
-    return Coordinates(
-        (nodes.get().first.get().getX() + nodes.get().second.get().getX()) / 2.,
-        (nodes.get().first.get().getY() + nodes.get().second.get().getY()) /
-            2.);
+  Coordinates getMiddle(std::function<double(double, double)> getZFunction) const {
+    const double x =
+        (nodes.get().first.get().getX() + nodes.get().second.get().getX()) / 2.;
+    const double y =
+        (nodes.get().first.get().getY() + nodes.get().second.get().getY()) / 2.;
+    return Coordinates( x, y, getZFunction(x, y));
   }
 
   static galois::optional<reference_wrapper<const Coordinates>>

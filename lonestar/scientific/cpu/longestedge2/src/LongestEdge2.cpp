@@ -161,8 +161,8 @@ int main(int argc, char** argv) {
 
   vector<Production0x*> productions{};
 //  Production01 production01 = Production01{&graphAdapter, version2D};
-  Production01 production01{&graphAdapter, version2D};
-  Production02 production02{&graphAdapter, version2D};
+  Production01 production01{&graphAdapter, version2D, *map};
+  Production02 production02{&graphAdapter, version2D, *map};
   productions.emplace_back(&production01);
   productions.emplace_back(&production02);
   galois::gInfo("Loop is being started...");

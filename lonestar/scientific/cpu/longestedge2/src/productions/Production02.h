@@ -8,10 +8,6 @@
 #include "../utils/ProductionHelpers.h"
 
 class Production02 : public Production0x {
-private:
-  GraphAdapter* graph;
-  bool version2D;
-
 public:
   using Production0x::Production0x;
 
