@@ -119,7 +119,23 @@ void checkPostProductionCorrectness(const GraphAdapter& graph,
                              child2ChildrenTriangles, child2Edges, graph);
 
     SECTION("Checking if children's coordinates match parent's ones") {
-      set<Coordinates> childCoords(child1TriangleCoords);
+      auto comparator = [](Coordinates a, Coordinates b) {
+        if (a.getX() < b.getX()) {
+          return true;
+        }
+        if (b.getX() < a.getX()) {
+          return false;
+        }
+        if (a.getY() < b.getY()) {
+          return true;
+        }
+        if (b.getY() < a.getY()) {
+          return false;
+        }
+        return a.getZ() < b.getZ();
+      };
+      set<Coordinates, decltype(comparator)> childCoords(comparator);
+      childCoords.merge(child1TriangleCoords);
       childCoords.merge(child2TriangleCoords);
       CHECK(childCoords.size() == 4);
       for (auto coord : parentTriangleCoords) {

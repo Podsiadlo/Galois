@@ -80,6 +80,13 @@ AvsUcdWriter::Triangle AvsUcdWriter::convertToTriangle(const GNode& node,
                    return putOrGetIndex(coords, &(state->points), &(state->pointCounter));
   });
 
+  if (points.size() > 3) {
+    cerr << "Incorrect triangle. Vertices: ";
+    for (size_t point : points) {
+      cerr << point << " ";
+    }
+    cerr << endl;
+  }
   int materialId = 0;
   return Triangle{points[0], points[1], points[2], materialId};
 }

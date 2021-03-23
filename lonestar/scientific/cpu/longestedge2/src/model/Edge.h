@@ -69,7 +69,7 @@ public:
   getCommonPoint(const Edge& edge1, const Edge& edge2) {
 
     if (edge1.isTriangle() || edge2.isTriangle()) {
-      fprintf(stderr, "Trying to get coords of triangle.");
+      fprintf(stderr, "A triangle is treated as an edge.");
       exit(19);
     }
     reference_wrapper<const Coordinates> coordinates1 = edge1.getNodes().first;

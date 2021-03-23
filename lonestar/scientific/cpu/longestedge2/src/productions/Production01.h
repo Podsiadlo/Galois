@@ -19,7 +19,7 @@ public:
     if (edgeToBreakIdx < 0) {
       return false;
     }
-    auto newCoordinates = breakEdge(edgeToBreakIdx, bag, edges, gNodes);
+    const Coordinates& newCoordinates = breakEdge(edgeToBreakIdx, bag, edges, gNodes);
     breakTriangle(edgeToBreakIdx, newCoordinates, edges, gNodes, triangle);
     return true;
   }

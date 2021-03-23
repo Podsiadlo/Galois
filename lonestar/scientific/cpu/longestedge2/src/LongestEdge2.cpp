@@ -168,9 +168,9 @@ int main(int argc, char** argv) {
   productions.emplace_back(&production01);
   productions.emplace_back(&production02);
   galois::gInfo("Loop is being started...");
-  afterStep(-1, graph);
+  afterStep(0, graph);
 //  galois::InsertBag<Coordinates> bag{};
-  for (int j = 0; j < steps; j++) {
+  for (int j = 1; j <= steps; j++) {
     galois::for_each(galois::iterate(graph.begin(), graph.end()),
                      [&](GNode node, auto& /*unused*/) {
                        if (basicCondition(graph, node)) {

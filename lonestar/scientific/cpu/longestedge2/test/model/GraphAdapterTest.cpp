@@ -20,6 +20,14 @@ TEST_CASE("GraphAdapter::getGNodesFrom simple test") {
   childEdge2.setBroken(true);
   auto *childNode2 = graph.createNode(childEdge2);
   graph.addNode(childNode2);
+  Edge freeEdge2{};
+  freeEdge2.setBroken(false);
+  auto *freeNode2 = graph.createNode(freeEdge2);
+  graph.addNode(freeNode2);
+  Edge freeEdge1{};
+  freeEdge1.setBroken(false);
+  auto *freeNode1 = graph.createNode(freeEdge1);
+  graph.addNode(freeNode1);
 
   graph.addEdge(parentNode, mainNode);
   graph.addEdge(mainNode, childNode1);
