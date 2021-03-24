@@ -98,7 +98,7 @@ int AvsUcdWriter::calculateSegmentMaterialId(const Edge& edge) const {
 }
 
 int AvsUcdWriter::calculateTriangleMaterialId(const Edge& triangle) const {
-  int materialId = triangle.isBroken() ? 2 : 1;
+  int materialId = triangle.isBroken() ? 3 : 1;
   return materialId;
 }
 

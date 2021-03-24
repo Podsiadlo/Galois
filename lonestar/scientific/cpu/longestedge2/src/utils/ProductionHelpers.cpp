@@ -23,7 +23,7 @@ int chooseGreatest(std::vector<int> toBreak,
     return edges[a].get() < edges[b].get();
   };
   std::set<int, decltype(comparator)> result(comparator);
-  if (edges.empty()) {
+  if (toBreak.empty()) {
     return -1;
   }
   for (int & i : toBreak) {

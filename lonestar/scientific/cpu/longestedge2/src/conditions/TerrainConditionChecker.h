@@ -2,10 +2,9 @@
 #define GALOIS_TERRAINCONDITIONCHECKER_H
 
 #include <cmath>
-#include "../utils/ConnectivityManager.h"
 #include "../utils/GaloisUtils.h"
+#include "../utils/Utils.h"
 #include "../model/Map.h"
-#include "../model/ProductionState.h"
 #include "../libmgrs/utm.h"
 #include "ConditionChecker.h"
 
@@ -13,18 +12,18 @@
 class TerrainConditionChecker : public ConditionChecker {
 public:
   explicit TerrainConditionChecker(double tolerance,
-                                   ConnectivityManager& connManager, Map& map)
-      : tolerance(tolerance), connManager(connManager), map(map) {}
+                                   const GraphAdapter& graphAdapter, const Map& map)
+      : tolerance(tolerance), graphAdapter(graphAdapter), map(map) {}
 
   //! Only refine if meets inside_condition + is hyperedge node
   bool execute(GNode& node) override {
-    NodeData& nodeData = node->getData();
-    if (!nodeData.isHyperEdge()) {
+    Edge& nodeData = node->getData();
+    if (!nodeData.isTriangle() || nodeData.isBroken()) {
       return false;
     }
 
     // gets coordinates of vertices connected by this hyperedge
-    vector<Coordinates> verticesCoords = connManager.getVerticesCoords(node);
+    vector<Coordinates> verticesCoords = graphAdapter.getCoordsOfTriangle(node);
 
     if (!inside_condition(verticesCoords)) {
       return false;
@@ -36,8 +35,8 @@ public:
 
 private:
   double tolerance;
-  ConnectivityManager& connManager;
-  Map& map;
+  const GraphAdapter& graphAdapter;
+  const Map& map;
 
   bool inside_condition(const vector<Coordinates>& verticesCoords) {
 
@@ -103,7 +102,7 @@ private:
   }
 
   bool is_inside_triangle(double barycentric_coords[]) {
-    return !greater(barycentric_coords[0] + barycentric_coords[1] +
+    return !Utils::is_greater(barycentric_coords[0] + barycentric_coords[1] +
                         barycentric_coords[2],
                     1.);
   }

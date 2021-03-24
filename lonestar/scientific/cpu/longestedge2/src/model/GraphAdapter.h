@@ -17,6 +17,18 @@ public:
     return getGNodesFrom(parent, graph);
   }
 
+  std::vector<Coordinates>
+  getCoordsOfTriangle(const GNode& triangleNode) const {
+    std::set<Coordinates> coordsSet;
+    const vector<GNode>& edgeNodes = getGNodesFrom(triangleNode);
+    for (auto* node : edgeNodes) {
+      auto edgeCoords = node->getData().getNodes();
+      coordsSet.insert(edgeCoords.first);
+      coordsSet.insert(edgeCoords.second);
+    }
+    return std::vector<Coordinates>{coordsSet.begin(), coordsSet.end()};
+  }
+
   GNode createAndAddNode(const Edge& nodeData) {
     auto* node = graph->createNode(nodeData);
     graph->addNode(node);

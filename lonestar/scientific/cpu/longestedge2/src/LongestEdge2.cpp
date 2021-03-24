@@ -14,7 +14,7 @@
 #include "productions/Production0x.h"
 #include "productions/Production01.h"
 #include "productions/Production02.h"
-#include "conditions/DummyConditionChecker.h"
+#include "conditions/TerrainConditionChecker.h"
 
 #include <Lonestar/BoilerPlate.h>
 
@@ -153,11 +153,11 @@ int main(int argc, char** argv) {
   // initialize wrapper over graph object (ConnManager)
 //  ConnectivityManager connManager{graph};
   //    DummyConditionChecker checker = DummyConditionChecker();
-//  TerrainConditionChecker checker =
-//      TerrainConditionChecker(tolerance, connManager, *map);
+  TerrainConditionChecker checker =
+      TerrainConditionChecker(tolerance, graphAdapter, *map);
 //  vector<Production*> productions = {&production1, &production2, &production3,
 //                                     &production4, &production5, &production6};
-  DummyConditionChecker checker = DummyConditionChecker();
+//  DummyConditionChecker checker = DummyConditionChecker();
 
   vector<Production0x*> productions{};
 //  Production01 production01 = Production01{&graphAdapter, version2D};
