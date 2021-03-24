@@ -51,6 +51,8 @@ private:
 
   int calculateSegmentMaterialId(const Edge& edge) const;
 
+  int calculateTriangleMaterialId(const Edge& triangle) const;
+
   template <class T>
   size_t putOrGetIndex(const T& element, map<T, size_t>* elements,
                        size_t* counter);

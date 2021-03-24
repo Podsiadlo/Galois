@@ -87,13 +87,18 @@ AvsUcdWriter::Triangle AvsUcdWriter::convertToTriangle(const GNode& node,
     }
     cerr << endl;
   }
-  int materialId = 0;
+  int materialId = calculateTriangleMaterialId(node->getData());
   return Triangle{points[0], points[1], points[2], materialId};
 }
 
 int AvsUcdWriter::calculateSegmentMaterialId(const Edge& edge) const {
-  int materialId = edge.isBorder() ? 1 : 3;
-  materialId += edge.isBroken() ? 1 : 0;
+  int materialId = edge.isBorder() ? 2 : 1;
+  materialId += edge.isBroken() ? 2 : 0;
+  return materialId;
+}
+
+int AvsUcdWriter::calculateTriangleMaterialId(const Edge& triangle) const {
+  int materialId = triangle.isBroken() ? 2 : 1;
   return materialId;
 }
 
