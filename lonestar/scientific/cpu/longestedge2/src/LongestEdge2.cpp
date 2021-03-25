@@ -98,7 +98,7 @@ int main(int argc, char** argv) {
     if (ascii) {
       AsciiReader reader;
       map = reader.read(asciiFile);
-      GraphGenerator::prepareSimplestGraph(
+      GraphGenerator::prepare12TrianglesGraph(
           map->getWestBorder(), map->getNorthBorder(), map->getEastBorder(),
           map->getSouthBorder(), version2D, &graphAdapter, &coordsBag, map);
     } else {
@@ -107,10 +107,8 @@ int main(int argc, char** argv) {
       map = reader.read(W, N, E, S, dataDir.c_str());
       galois::gInfo("Terrain data read.");
 
-      GraphGenerator::prepareSimplestGraph(W, N, E, S, true, &graphAdapter,
+      GraphGenerator::prepare12TrianglesGraph(W, N, E, S, true, &graphAdapter,
                                            &coordsBag, map);
-      //      GraphGenerator::generateSampleGraphWithDataWithConversionToUtm(
-//          graph, *map, W, N, E, S, version2D, square);
     }
     galois::gInfo("Initial graph generated");
   } else {
@@ -155,19 +153,15 @@ int main(int argc, char** argv) {
   //    DummyConditionChecker checker = DummyConditionChecker();
   TerrainConditionChecker checker =
       TerrainConditionChecker(tolerance, graphAdapter, *map);
-//  vector<Production*> productions = {&production1, &production2, &production3,
-//                                     &production4, &production5, &production6};
 //  DummyConditionChecker checker = DummyConditionChecker();
 
   vector<Production0x*> productions{};
-//  Production01 production01 = Production01{&graphAdapter, version2D};
   Production01 production01{&graphAdapter, version2D, *map};
   Production02 production02{&graphAdapter, version2D, *map};
   productions.emplace_back(&production01);
   productions.emplace_back(&production02);
   galois::gInfo("Loop is being started...");
   afterStep(0, graph);
-//  galois::InsertBag<Coordinates> bag{};
   for (int j = 1; j <= steps; j++) {
     galois::for_each(galois::iterate(graph.begin(), graph.end()),
                      [&](GNode node, auto& /*unused*/) {
@@ -178,18 +172,6 @@ int main(int argc, char** argv) {
                        }
                      });
 
-//    std::atomic<int> i = 0;
-//    graph.addNode(GNode{});
-//    graph.addNode(GNode{});
-//    galois::for_each(galois::iterate(graph.begin(), graph.end()),
-//                     [&](GNode , auto& ) {
-//                       galois::gInfo(std::string("Adding point: ") + std::to_string(i));
-////                       bag.emplace(Coordinates(i,i,i));
-//                       ++i;
-//                     }, galois::loopname("aaaaaaaaa"));
-////    for(auto coord: bag) {
-////      galois::gInfo(std::string("Point: ") + std::to_string(coord.getX()));
-////    }
     galois::gInfo("Condition chceking in step ", j, " finished.");
     galois::StatTimer step(("step" + std::to_string(j)).c_str());
     step.start();
@@ -206,13 +188,6 @@ int main(int argc, char** argv) {
             if (!basicCondition(graph, node)) {
               return;
             }
-
-            // TODO does this have to be initialized for every one?
-            // may be able to optimize
-//            ProductionState pState(connManager, node, version2D,
-//                                   [&map](double x, double y) -> double {
-//                                     return map->get_height(x, y);
-//                                   });
 
             // loop through productions and apply the first applicable
             // one
