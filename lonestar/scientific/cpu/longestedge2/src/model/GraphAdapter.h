@@ -38,6 +38,7 @@ public:
   std::vector<std::reference_wrapper<Edge>>
   getEdges(const std::vector<GNode>& gNodes) const {
     std::vector<std::reference_wrapper<Edge>> edges;
+    edges.reserve(3);
     for (GNode gNode : gNodes) {
       edges.emplace_back(gNode->getData());
     }
@@ -60,6 +61,7 @@ public:
 
   static std::vector<GNode> getGNodesFrom(GNode parent, Graph* graph) {
     std::vector<GNode> vertices;
+    vertices.reserve(3);
     for (const auto& edge : graph->out_edges(parent)) {
       vertices.emplace_back(graph->getEdgeDst(edge));
     }

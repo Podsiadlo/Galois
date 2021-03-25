@@ -207,8 +207,9 @@ int main(int argc, char** argv) {
     }
 
     step.stop();
-    afterStep(j, graph);
     galois::gInfo("Step ", j, " finished.");
+    afterStep(j, graph);
+    galois::gInfo("Step ", j, " results saved.");
   }
   galois::gInfo("All steps finished.");
 

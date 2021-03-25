@@ -3,10 +3,11 @@
 
 std::vector<int> getLongest(const vector<std::reference_wrapper<Edge>>& edges) {
   std::vector<int> longestEdges;
+  longestEdges.reserve(3);
   double bestLength = 0;
   for (size_t i = 0; i < edges.size(); ++i) {
-    auto currentEdge = edges[i].get();
-    double currentLength = currentEdge.getLength();
+//    Edge& currentEdge = edges[i];
+    double currentLength = edges[i].get().getLength();
     if (currentLength - bestLength > EPS) {
       longestEdges.clear();
       longestEdges.emplace_back(i);
