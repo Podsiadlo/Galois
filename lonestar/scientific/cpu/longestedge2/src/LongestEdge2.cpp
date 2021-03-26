@@ -59,13 +59,15 @@ static cll::opt<std::string>
 static cll::opt<long> zone("zone", cll::desc("UTM zone of the inputMeshFile"));
 static cll::opt<char> hemisphere("hemisphere",
                                  cll::desc("Hemisphere of the inputMeshFile"));
-static cll::opt<bool> altOutput(
-    "altOutput",
-    cll::desc("Write to .ele,.node,.poly files instead of AVS UCD (.inp)"));
+//static cll::opt<bool> altOutput(
+//    "altOutput",
+//    cll::desc("Write to .ele,.node,.poly files instead of AVS UCD (.inp)"));
 static cll::opt<bool> display("display",
                               cll::desc("Use external visualizator."));
+static cll::opt<bool> writeSteps("write-steps",
+                              cll::desc("Write state after each step."));
 
-void afterStep(int, Graph&);
+void afterStep(int /*step*/, Graph* /*graph*/);
 
 bool basicCondition(const Graph& graph, GNode& node);
 
@@ -161,7 +163,9 @@ int main(int argc, char** argv) {
   productions.emplace_back(&production01);
   productions.emplace_back(&production02);
   galois::gInfo("Loop is being started...");
-  afterStep(0, graph);
+  if (writeSteps) {
+    afterStep(0, &graph);
+  }
   for (int j = 1; j <= steps; j++) {
     galois::for_each(galois::iterate(graph.begin(), graph.end()),
                      [&](GNode node, auto& /*unused*/) {
@@ -208,8 +212,10 @@ int main(int argc, char** argv) {
 
     step.stop();
     galois::gInfo("Step ", j, " finished.");
-    afterStep(j, graph);
-    galois::gInfo("Step ", j, " results saved.");
+    if (writeSteps) {
+      afterStep(j, &graph);
+      galois::gInfo("Results of step ", j, " saved.");
+    }
   }
   galois::gInfo("All steps finished.");
 
@@ -239,7 +245,7 @@ bool basicCondition(const Graph& graph, GNode& node) {
 }
 
 //! Writes intermediate data to file
-void afterStep(int GALOIS_UNUSED(step), Graph& GALOIS_UNUSED(graph)) {
-  AvsUcdWriter writer{&graph};
+void afterStep(int GALOIS_UNUSED(step), Graph* GALOIS_UNUSED(graph)) {
+  AvsUcdWriter writer{graph};
   writer.write(output + "_s" + std::to_string(step) + ".inp");
 }
