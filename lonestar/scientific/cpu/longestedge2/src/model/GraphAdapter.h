@@ -36,12 +36,13 @@ public:
   }
 
   std::vector<std::reference_wrapper<Edge>>
-  getEdges(const std::vector<GNode>& gNodes) const {
-    std::vector<std::reference_wrapper<Edge>> edges;
-    edges.reserve(3);
-    for (GNode gNode : gNodes) {
-      edges.emplace_back(gNode->getData());
-    }
+  getEdges(const std::vector<GNode>& gNodes) const { // FIXME: Mem leak
+    std::vector<std::reference_wrapper<Edge>> edges{
+        gNodes[0]->getData(), gNodes[1]->getData(), gNodes[2]->getData()};
+    //    edges.reserve(3);
+    //    std::transform(gNodes.begin(), gNodes.end(),
+    //    std::back_inserter(edges),
+    //                   [](GNode node) { return (node->getData()); });
     return edges;
   }
 
@@ -59,12 +60,14 @@ public:
 
   Graph* getGraph() const { return graph; }
 
-  static std::vector<GNode> getGNodesFrom(GNode parent, Graph* graph) {
+  static std::vector<GNode> getGNodesFrom(GNode parent,
+                                          Graph* graph) { // FIXME: Mem leak
     std::vector<GNode> vertices;
-    vertices.reserve(3);
-    for (const auto& edge : graph->out_edges(parent)) {
-      vertices.emplace_back(graph->getEdgeDst(edge));
-    }
+    //    vertices.reserve(3);
+    auto outEdges = graph->out_edges(parent);
+    std::transform(outEdges.begin(), outEdges.end(),
+                   std::back_inserter(vertices),
+                   [&graph](auto& edge) { return graph->getEdgeDst(edge); });
     return vertices;
   }
 
