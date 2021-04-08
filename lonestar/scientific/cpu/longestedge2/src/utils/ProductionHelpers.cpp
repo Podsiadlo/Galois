@@ -1,13 +1,12 @@
 #include <set>
 #include "ProductionHelpers.h"
 
-std::vector<int> getLongest(const vector<std::reference_wrapper<Edge>>& edges) {
+std::vector<int> getLongest(const vector<GNode>& edges) {
   std::vector<int> longestEdges;
   longestEdges.reserve(3);
   double bestLength = 0;
   for (size_t i = 0; i < edges.size(); ++i) {
-//    Edge& currentEdge = edges[i];
-    double currentLength = edges[i].get().getLength();
+    double currentLength = edges[i]->getData().getLength();
     if (currentLength - bestLength > EPS) {
       longestEdges.clear();
       longestEdges.emplace_back(i);
@@ -19,16 +18,16 @@ std::vector<int> getLongest(const vector<std::reference_wrapper<Edge>>& edges) {
   return longestEdges;
 }
 int chooseGreatest(std::vector<int> toBreak,
-                   const vector<std::reference_wrapper<Edge>>& edges) {
+                   const vector<GNode>& edges) {
   auto comparator = [&edges](int a, int b) {
-    return edges[a].get() < edges[b].get();
+    return edges[a]->getData() < edges[b]->getData();
   };
   std::set<int, decltype(comparator)> result(comparator);
   if (toBreak.empty()) {
     return -1;
   }
   for (int & i : toBreak) {
-    if (edges[i].get().isBorder()) {
+    if (edges[i]->getData().isBorder()) {
       result.insert(i);
     }
   }
@@ -38,10 +37,10 @@ int chooseGreatest(std::vector<int> toBreak,
   return *result.rbegin(); //C++ standard guarantees a set is ordered
 }
 
-bool isAnyBroken(const std::vector<std::reference_wrapper<Edge>>& edges) {
+bool isAnyBroken(const std::vector<GNode>& edges) {
   bool result = false;
-  for (auto edge: edges) {
-    result = result || edge.get().isBroken();
+  for (auto *edge: edges) {
+    result = result || edge->getData().isBroken();
   }
   return result;
 }

@@ -3,7 +3,7 @@
 
 #include "Graph.h"
 
-class GraphAdapter : private boost::noncopyable {
+class GraphAdapter {
 public:
   GraphAdapter() : graph(new Graph{}), selfConstructedGraph(true) {}
   GraphAdapter(Graph* graph) : graph(graph) {}
@@ -33,17 +33,6 @@ public:
     auto* node = graph->createNode(nodeData);
     graph->addNode(node);
     return node;
-  }
-
-  std::vector<std::reference_wrapper<Edge>>
-  getEdges(const std::vector<GNode>& gNodes) const { // FIXME: Mem leak
-    std::vector<std::reference_wrapper<Edge>> edges{
-        gNodes[0]->getData(), gNodes[1]->getData(), gNodes[2]->getData()};
-    //    edges.reserve(3);
-    //    std::transform(gNodes.begin(), gNodes.end(),
-    //    std::back_inserter(edges),
-    //                   [](GNode node) { return (node->getData()); });
-    return edges;
   }
 
   GNode createTriangle(const GNode& edge1, const GNode& edge2,

@@ -12,21 +12,20 @@ public:
   using Production0x::Production0x;
 
   bool execute(const GNode& triangle, Bag* bag) override {
-    auto gNodes = graph->getGNodesFrom(triangle);
-    auto edges  = graph->getEdges(gNodes);
+    vector<GNode> gNodes = graph->getGNodesFrom(triangle);
 
-    int edgeToBreakIdx = chooseEdge(triangle->getData(), edges);
+    int edgeToBreakIdx = chooseEdge(triangle->getData(), gNodes);
     if (edgeToBreakIdx < 0) {
       return false;
     }
-    const Coordinates& newCoordinates = breakEdge(edgeToBreakIdx, bag, edges, gNodes);
-    breakTriangle(edgeToBreakIdx, newCoordinates, edges, gNodes, triangle);
+    const Coordinates& newCoordinates = breakEdge(edgeToBreakIdx, bag, gNodes);
+    breakTriangle(edgeToBreakIdx, newCoordinates, gNodes, triangle);
     return true;
   }
 
 private:
   int chooseEdge(const Edge& triangle,
-                 const vector<std::reference_wrapper<Edge>>& edges) {
+                 const vector<GNode>& edges) {
     if (!triangle.isTriangle()) {
       return -1;
     }
@@ -36,7 +35,7 @@ private:
     const vector<int>& longest = getLongest(edges);
     vector<int> toBreak;
     for (int edge : longest) {
-      if (!edges[edge].get().isBroken()) {
+      if (!edges[edge]->getData().isBroken()) {
         toBreak.push_back(edge);
       } else {
         return -1;

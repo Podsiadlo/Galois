@@ -3,7 +3,6 @@
 
 //#include <galois/UserContext.h>
 #include "../model/Graph.h"
-#include "../model/Edge.h"
 #include "../model/GraphAdapter.h"
 #include "../utils/ProductionHelpers.h"
 
@@ -12,15 +11,14 @@ public:
   using Production0x::Production0x;
 
   bool execute(const GNode& triangle, Bag* /*bag*/) override {
-    auto gNodes = graph->getGNodesFrom(triangle);
-    auto edges  = graph->getEdges(gNodes);
+    vector<GNode> gNodes = graph->getGNodesFrom(triangle);
 
-    int toBreak = chooseEdge(triangle->getData(), edges);
+    int toBreak = chooseEdge(triangle->getData(), gNodes);
     if (toBreak < 0) {
       return false;
     }
     const Coordinates& newCoordinates = getHangingCoordinates(toBreak, gNodes);
-    breakTriangle(toBreak, newCoordinates, edges, gNodes, triangle);
+    breakTriangle(toBreak, newCoordinates, gNodes, triangle);
     return true;
   }
 
@@ -28,7 +26,7 @@ private:
 
   const Coordinates& getHangingCoordinates(int brokenEdge,
                                     const vector<GNode>& gNodes) const {
-    const vector<GNode>& edgeHalves = graph->getGNodesFrom(gNodes[brokenEdge]);
+    vector<GNode> edgeHalves = graph->getGNodesFrom(gNodes[brokenEdge]);
     auto hangingCoordinates = Edge::getCommonPoint(edgeHalves[0]->getData(),
                                                    edgeHalves[1]->getData());
     return hangingCoordinates.get();
@@ -36,14 +34,14 @@ private:
 
 
   int chooseEdge(const Edge& triangle,
-                 const vector<std::reference_wrapper<Edge>>& edges) {
+                 const vector<GNode>& edges) {
     if (!triangle.isTriangle()) {
       return -1;
     }
     const vector<int>& longest = getLongest(edges);
     vector<int> toBreak;
     for (auto edge : longest) {
-      if (edges[edge].get().isBroken()) {
+      if (edges[edge]->getData().isBroken()) {
         toBreak.push_back(edge);
       }
     }

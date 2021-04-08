@@ -1,13 +1,13 @@
 #ifndef GALOIS_PRODUCTION_HELPERS_H
 #define GALOIS_PRODUCTION_HELPERS_H
 
-#include "../model/Edge.h"
+#include "../model/Graph.h"
 
-std::vector<int> getLongest(const std::vector<std::reference_wrapper<Edge>>& edges);
+std::vector<int> getLongest(const std::vector<GNode>& edges);
 
-int chooseGreatest(std::vector<int> toBreak, const std::vector<std::reference_wrapper<Edge>>& edges);
+int chooseGreatest(std::vector<int> toBreak, const std::vector<GNode>& edges);
 
-bool isAnyBroken(const std::vector<std::reference_wrapper<Edge>>& edges);
+bool isAnyBroken(const std::vector<GNode>& edges);
 
 
 

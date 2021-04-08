@@ -16,11 +16,9 @@ protected:
   GraphAdapter* graph;
 
   const Coordinates& breakEdge(int toBreak, Bag* bag,
-                               const vector<reference_wrapper<Edge>>& edges,
                                const vector<GNode>& gNodes);
 
   void breakTriangle(int brokenEdgeIdx, const Coordinates& hangingPoint,
-                     vector<reference_wrapper<Edge>> edges,
                      vector<GNode> gNodes, GNode triangle);
 
 private:
