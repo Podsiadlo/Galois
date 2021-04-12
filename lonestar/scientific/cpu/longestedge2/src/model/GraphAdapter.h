@@ -13,7 +13,7 @@ public:
     }
   }
 
-  std::vector<GNode> getGNodesFrom(GNode parent) const {
+  inline std::vector<GNode> getGNodesFrom(GNode parent) const {
     return getGNodesFrom(parent, graph);
   }
 
@@ -49,8 +49,7 @@ public:
 
   Graph* getGraph() const { return graph; }
 
-  static std::vector<GNode> getGNodesFrom(GNode parent,
-                                          Graph* graph) { // FIXME: Mem leak
+  static inline std::vector<GNode> getGNodesFrom(GNode parent, Graph* graph) {
     std::vector<GNode> vertices;
     //    vertices.reserve(3);
     auto outEdges = graph->out_edges(parent);
