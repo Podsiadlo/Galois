@@ -1,24 +1,20 @@
-#include "conditions/TerrainConditionChecker.h"
+//#include "conditions/TerrainConditionChecker.h"
 #include "libmgrs/utm.h"
 #include "model/Coordinates.h"
 #include "model/Graph.h"
 #include "model/Map.h"
-#include "model/ProductionState.h"
-#include "productions/Production.h"
-#include "productions/Production1.h"
-#include "productions/Production2.h"
-#include "productions/Production3.h"
-#include "productions/Production4.h"
-#include "productions/Production5.h"
-#include "productions/Production6.h"
 #include "readers/InpReader.h"
 #include "readers/SrtmReader.h"
-#include "writers/InpWriter.h"
-#include "writers/TriangleFormatWriter.h"
-#include "utils/ConnectivityManager.h"
+#include "writers/AvsUcdWriter.h"
+//#include "writers/InpWriter.h"
+//#include "writers/TriangleFormatWriter.h"
 #include "utils/GraphGenerator.h"
 #include "utils/Utils.h"
 #include "readers/AsciiReader.h"
+#include "productions/Production0x.h"
+#include "productions/Production01.h"
+#include "productions/Production02.h"
+#include "conditions/TerrainConditionChecker.h"
 
 #include <Lonestar/BoilerPlate.h>
 
@@ -63,13 +59,15 @@ static cll::opt<std::string>
 static cll::opt<long> zone("zone", cll::desc("UTM zone of the inputMeshFile"));
 static cll::opt<char> hemisphere("hemisphere",
                                  cll::desc("Hemisphere of the inputMeshFile"));
-static cll::opt<bool> altOutput(
-    "altOutput",
-    cll::desc("Write to .ele,.node,.poly files instead of AVS UCD (.inp)"));
+//static cll::opt<bool> altOutput(
+//    "altOutput",
+//    cll::desc("Write to .ele,.node,.poly files instead of AVS UCD (.inp)"));
 static cll::opt<bool> display("display",
                               cll::desc("Use external visualizator."));
+static cll::opt<bool> writeSteps("write-steps",
+                              cll::desc("Write state after each step."));
 
-void afterStep(int i, Graph& graph);
+void afterStep(int /*step*/, Graph* /*graph*/);
 
 bool basicCondition(const Graph& graph, GNode& node);
 
@@ -78,6 +76,7 @@ int main(int argc, char** argv) {
 
   LonestarStart(argc, argv, name, desc, url, nullptr);
   Graph graph{};
+  GraphAdapter graphAdapter{&graph};
 
   galois::reportPageAlloc("MeminfoPre1");
   // Tighter upper bound for pre-alloc, useful for machines with limited memory,
@@ -94,27 +93,29 @@ int main(int argc, char** argv) {
   galois::gInfo("Initial configuration set.");
 
   Map* map;
+  galois::InsertBag<Coordinates> coordsBag{};
 
   // creates the initial mesh using the borders and the new map
   if (inputMeshFile.empty()) {
     if (ascii) {
       AsciiReader reader;
       map = reader.read(asciiFile);
-      GraphGenerator::generateSampleGraphWithData(
-          graph, *map, 0, map->getRegionLength(), map->getRegionWidth(), 0,
-          version2D);
+      GraphGenerator::prepare12TrianglesGraph(
+          map->getWestBorder(), map->getNorthBorder(), map->getEastBorder(),
+          map->getSouthBorder(), version2D, &graphAdapter, &coordsBag, map);
     } else {
       SrtmReader reader;
       // terrain setup:  load terrain heights into the map object
       map = reader.read(W, N, E, S, dataDir.c_str());
       galois::gInfo("Terrain data read.");
-      GraphGenerator::generateSampleGraphWithDataWithConversionToUtm(
-          graph, *map, W, N, E, S, version2D, square);
+
+      GraphGenerator::prepare12TrianglesGraph(W, N, E, S, true, &graphAdapter,
+                                           &coordsBag, map);
     }
     galois::gInfo("Initial graph generated");
   } else {
 
-    inpRead(dataDir + "/" + inputMeshFile, graph, N, S, E, W, version2D);
+//    inpRead(dataDir + "/" + inputMeshFile, graph, N, S, E, W, version2D);
     galois::gInfo("INP mesh read.");
 
     // Let's convert the four corners to geodesic coordinates
@@ -141,53 +142,40 @@ int main(int argc, char** argv) {
 
     // Update the coordinates of all graph nodes (mesh nodes, and the interior
     // nodes)
-    for (auto node : graph) {
-      const auto coords = node->getData().getCoords();
-
-      node->getData().setCoords(
-          Coordinates{coords.getX(), coords.getY(), *map});
-    }
+//    for (auto node : graph) {
+//      const auto coords = node->getData().getCoords();
+//
+//      node->getData().setCoords(
+//          Coordinates{coords.getX(), coords.getY(), *map});
+//    }
   }
 
   // initialize wrapper over graph object (ConnManager)
-  ConnectivityManager connManager{graph};
+//  ConnectivityManager connManager{graph};
   //    DummyConditionChecker checker = DummyConditionChecker();
   TerrainConditionChecker checker =
-      TerrainConditionChecker(tolerance, connManager, *map);
-  Production1 production1{connManager};
-  Production2 production2{connManager};
-  Production3 production3{connManager};
-  Production4 production4{connManager};
-  Production5 production5{connManager};
-  Production6 production6{connManager};
-  vector<Production*> productions = {&production1, &production2, &production3,
-                                     &production4, &production5, &production6};
+      TerrainConditionChecker(tolerance, graphAdapter, *map);
+//  DummyConditionChecker checker = DummyConditionChecker();
+
+  vector<Production0x*> productions{};
+  Production01 production01{&graphAdapter, version2D, *map};
+  Production02 production02{&graphAdapter, version2D, *map};
+  productions.emplace_back(&production01);
+  productions.emplace_back(&production02);
   galois::gInfo("Loop is being started...");
-  //    afterStep(0, graph);
-  galois::InsertBag<Coordinates> bag{};
-  for (int j = 0; j < steps; j++) {
+  if (writeSteps) {
+    afterStep(0, &graph);
+  }
+  for (int j = 1; j <= steps; j++) {
     galois::for_each(galois::iterate(graph.begin(), graph.end()),
                      [&](GNode node, auto& /*unused*/) {
                        if (basicCondition(graph, node)) {
-
                          // terrain checker to see if refinement needed
                          // based on terrain
                          checker.execute(node);
                        }
                      });
 
-    std::atomic<int> i = 0;
-    graph.addNode(GNode{});
-    graph.addNode(GNode{});
-    galois::for_each(galois::iterate(graph.begin(), graph.end()),
-                     [&](GNode , auto& ) {
-                       galois::gInfo(std::string("Adding point: ") + std::to_string(i));
-//                       bag.emplace(Coordinates(i,i,i));
-                       ++i;
-                     }, galois::loopname("aaaaaaaaa"));
-    for(auto coord: bag) {
-      galois::gInfo(std::string("Point: ") + std::to_string(coord.getX()));
-    }
     galois::gInfo("Condition chceking in step ", j, " finished.");
     galois::StatTimer step(("step" + std::to_string(j)).c_str());
     step.start();
@@ -199,51 +187,52 @@ int main(int argc, char** argv) {
 
       galois::for_each(
           galois::iterate(graph.begin(), graph.end()),
-          [&](GNode node, auto& ctx) {
+          [&](GNode node, auto& /*ctx*/) {
             // only need to check hyperedges
             if (!basicCondition(graph, node)) {
               return;
             }
 
-            // TODO does this have to be initialized for every one?
-            // may be able to optimize
-            ProductionState pState(connManager, node, version2D,
-                                   [&map](double x, double y) -> double {
-                                     return map->get_height(x, y);
-                                   });
-
             // loop through productions and apply the first applicable
             // one
-            for (Production* production : productions) {
-              if (production->execute(pState, ctx)) {
-                afterStep(j, graph);
-                prodExecuted = true;
-                return;
-              }
+//            for (Production* production : productions) {
+//              if (production->execute(pState, ctx)) {
+//                afterStep(j, graph);
+//                prodExecuted = true;
+//                return;
+//              }
+//            }
+            if (!production01.execute(node, &coordsBag)) {
+              production02.execute(node, &coordsBag);
             }
+
           },
           galois::loopname(("step" + std::to_string(j)).c_str()));
     }
 
     step.stop();
     galois::gInfo("Step ", j, " finished.");
+    if (writeSteps) {
+      afterStep(j, &graph);
+      galois::gInfo("Results of step ", j, " saved.");
+    }
   }
   galois::gInfo("All steps finished.");
 
   // final result writing
-  if (!output.empty()) {
-    if (altOutput) {
-      triangleFormatWriter(output, graph);
-    } else {
-      inpWriter(output + ".inp", graph);
-    }
-    galois::gInfo("Graph written to file ", output);
-  }
-
-  if (display) {
-    if (system((std::string("./display.sh ") + output).c_str()))
-      std::abort();
-  }
+//  if (!output.empty()) {
+//    if (altOutput) {
+//      triangleFormatWriter(output, graph);
+//    } else {
+//      inpWriter(output + ".inp", graph);
+//    }
+//    galois::gInfo("Graph written to file ", output);
+//  }
+//
+//  if (display) {
+//    if (system((std::string("./display.sh ") + output).c_str()))
+//      std::abort();
+//  }
 
   delete map;
   return 0;
@@ -252,10 +241,11 @@ int main(int argc, char** argv) {
 //! Checks if node exists + is hyperedge
 bool basicCondition(const Graph& graph, GNode& node) {
   return graph.containsNode(node, galois::MethodFlag::WRITE) &&
-         node->getData().isHyperEdge();
+         node->getData().isTriangle();
 }
 
 //! Writes intermediate data to file
-void afterStep(int GALOIS_UNUSED(step), Graph& GALOIS_UNUSED(graph)) {
-  inpWriter(output + "_s" + std::to_string(step) + ".inp", graph);
+void afterStep(int GALOIS_UNUSED(step), Graph* GALOIS_UNUSED(graph)) {
+  AvsUcdWriter writer{graph};
+  writer.write(output + "_s" + std::to_string(step) + ".inp");
 }
