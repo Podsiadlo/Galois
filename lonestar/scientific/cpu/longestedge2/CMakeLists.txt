@@ -16,9 +16,18 @@ add_dependencies(apps longestedge2-cpu)
 target_link_libraries(longestedge2-cpu PRIVATE Galois::shmem lonestar)
 install(TARGETS longestedge2-cpu DESTINATION "${CMAKE_INSTALL_BINDIR}" COMPONENT apps EXCLUDE_FROM_ALL)
 
+Include(FetchContent)
+
+FetchContent_Declare(
+        Catch2
+        GIT_REPOSITORY https://github.com/catchorg/Catch2.git
+        GIT_TAG        v2.13.5)
+
+FetchContent_MakeAvailable(Catch2)
+
 add_executable(longestedge2Test test/TestMain.cpp ${SOURCES})
 add_dependencies(longestedge2Test longestedge2-cpu)
 add_dependencies(apps longestedge2Test)
-target_link_libraries(longestedge2Test PRIVATE Galois::shmem lonestar)
+target_link_libraries(longestedge2Test PRIVATE Galois::shmem lonestar Catch2::Catch2)
 
 add_test(test_longest_edge2 longestedge2Test)

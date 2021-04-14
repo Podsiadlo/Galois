@@ -8,7 +8,9 @@ TEST_CASE("Production1 should work on simple P1 graph", "[Production1]") {
   vector<GNode> nodes = prepareTest1Graph(&graph, &coordsBag);
   nodes[0]->getData().setToRefine(true);
   galois::UserContext<GNode> ctx;
-  Production01 production{&graph, true};
+  Production01 production{
+      &graph, true,
+      Map{static_cast<double**>(malloc(sizeof(double*))), 0, 0, 0, 0, false}};
   bool result = production.execute(nodes[0], &coordsBag);
 
   REQUIRE(result == true);
@@ -25,7 +27,9 @@ TEST_CASE("Production1 should not work on simple P2 graph", "[Production1]") {
   vector<GNode> nodes = prepareTest2Graph(&graph, &coordsBag);
   nodes[0]->getData().setToRefine(true);
   galois::UserContext<GNode> ctx;
-  Production01 production{&graph, true};
+  Production01 production{
+      &graph, true,
+      Map{static_cast<double**>(malloc(sizeof(double*))), 0, 0, 0, 0, false}};
   bool result = production.execute(nodes[0], &coordsBag);
   REQUIRE(result == false);
 }
