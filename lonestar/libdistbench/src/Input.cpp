@@ -36,9 +36,9 @@ cll::opt<std::string> inputFileTranspose("graphTranspose",
                                          cll::desc("<input file, transposed>"),
                                          cll::init(""));
 cll::opt<bool>
-    inputFileSymmetric("symmetricGraph",
-                       cll::desc("Specify that the input graph is symmetric"),
-                       cll::init(false));
+    symmetricGraph("symmetricGraph",
+                   cll::desc("Specify that the input graph is symmetric"),
+                   cll::init(false));
 
 cll::opt<PARTITIONING_SCHEME> partitionScheme(
     "partition", cll::desc("Type of partitioning."),
