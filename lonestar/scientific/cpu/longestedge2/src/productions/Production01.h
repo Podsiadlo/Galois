@@ -12,7 +12,12 @@ public:
   using Production0x::Production0x;
 
   bool execute(const GNode& triangle, Bag* bag) override {
-    vector<GNode> gNodes = graph->getGNodesFrom(triangle);
+    std::vector<GNode> gNodes;
+    gNodes.reserve(3);
+    auto outEdges = graph->getGraph()->out_edges(triangle);
+    std::transform(outEdges.begin(), outEdges.end(),
+                   std::back_inserter(gNodes),
+                   [&](auto& edge) { return graph->getGraph()->getEdgeDst(edge); });
 
     int edgeToBreakIdx = chooseEdge(triangle->getData(), gNodes);
     if (edgeToBreakIdx < 0) {

@@ -26,7 +26,13 @@ void Production0x::breakTriangle(int brokenEdgeIdx,
   GNode newNode = graph->createAndAddNode(
       Edge(oppositePoint, cref(hangingPoint), false, version2D));
 
-  vector<GNode> edgeHalves = graph->getGNodesFrom(gNodes[brokenEdgeIdx]);
+  std::vector<GNode> edgeHalves;
+  edgeHalves.reserve(3);
+  auto outEdges = graph->getGraph()->out_edges(gNodes[brokenEdgeIdx]);
+  std::transform(
+      outEdges.begin(), outEdges.end(), std::back_inserter(edgeHalves),
+      [&](auto& edge) { return graph->getGraph()->getEdgeDst(edge); });
+
   if (Edge::getCommonPoint(edgeHalves[0]->getData(),
                            gNodes[firstAdjacent(brokenEdgeIdx)]->getData())
           .is_initialized()) {

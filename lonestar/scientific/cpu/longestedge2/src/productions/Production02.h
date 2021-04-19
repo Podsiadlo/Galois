@@ -11,7 +11,13 @@ public:
   using Production0x::Production0x;
 
   bool execute(const GNode& triangle, Bag* /*bag*/) override {
-    vector<GNode> gNodes = graph->getGNodesFrom(triangle);
+    //    vector<GNode> gNodes = graph->getGNodesFrom(triangle);
+    std::vector<GNode> gNodes;
+    gNodes.reserve(3);
+    auto outEdges = graph->getGraph()->out_edges(triangle);
+    std::transform(
+        outEdges.begin(), outEdges.end(), std::back_inserter(gNodes),
+        [&](auto& edge) { return graph->getGraph()->getEdgeDst(edge); });
 
     int toBreak = chooseEdge(triangle->getData(), gNodes);
     if (toBreak < 0) {
@@ -23,18 +29,20 @@ public:
   }
 
 private:
-
   const Coordinates& getHangingCoordinates(int brokenEdge,
-                                    const vector<GNode>& gNodes) const {
-    vector<GNode> edgeHalves = graph->getGNodesFrom(gNodes[brokenEdge]);
+                                           const vector<GNode>& gNodes) const {
+    std::vector<GNode> edgeHalves;
+    edgeHalves.reserve(2);
+    auto outEdges = graph->getGraph()->out_edges(gNodes[brokenEdge]);
+    std::transform(
+        outEdges.begin(), outEdges.end(), std::back_inserter(edgeHalves),
+        [&](auto& edge) { return graph->getGraph()->getEdgeDst(edge); });
     auto hangingCoordinates = Edge::getCommonPoint(edgeHalves[0]->getData(),
                                                    edgeHalves[1]->getData());
     return hangingCoordinates.get();
   }
 
-
-  int chooseEdge(const Edge& triangle,
-                 const vector<GNode>& edges) {
+  int chooseEdge(const Edge& triangle, const vector<GNode>& edges) {
     if (!triangle.isTriangle()) {
       return -1;
     }
