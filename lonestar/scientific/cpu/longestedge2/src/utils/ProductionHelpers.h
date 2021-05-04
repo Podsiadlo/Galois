@@ -3,11 +3,11 @@
 
 #include "../model/Graph.h"
 
-std::vector<int> getLongest(const std::vector<GNode>& edges);
+std::vector<int> getLongest(const GNode* edges);
 
-int chooseGreatest(std::vector<int> toBreak, const std::vector<GNode>& edges);
+int chooseGreatest(std::vector<int> toBreak, const GNode* edges);
 
-bool isAnyBroken(const std::vector<GNode>& edges);
+bool isAnyBroken(const GNode* edges);
 
 
 

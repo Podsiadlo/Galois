@@ -63,16 +63,19 @@ AvsUcdWriter::Segment AvsUcdWriter::convertToSegment(const Edge& edge,
 
 AvsUcdWriter::Triangle AvsUcdWriter::convertToTriangle(const GNode& node,
                                                        StateMaps* state) {
-  const vector<GNode>& childNodes = GraphAdapter::getGNodesFrom(node, graph);
+  const GNode* childNodes = GraphAdapter::getGNodesFrom(node, graph);
   std::set<Coordinates> coordsSet;
   std::vector<Segment> childSegments;
-  for (auto* childNode : childNodes) {
-    const Edge& childEdge = childNode->getData();
+  for (int i = 0; i < 3; ++i) {
+//  }
+//  for (auto* childNode : childNodes) {
+    const Edge& childEdge = childNodes[i]->getData();
     if (!childEdge.isTriangle()) {
       coordsSet.insert(childEdge.getNodes().first);
       coordsSet.insert(childEdge.getNodes().second);
     }
   }
+  delete childNodes;
 
   std::vector<size_t> points;
   std::transform(coordsSet.begin(), coordsSet.end(), std::back_inserter(points),

@@ -11,7 +11,7 @@ public:
   using Production0x::Production0x;
 
   bool execute(const GNode& triangle, Bag* /*bag*/) override {
-    vector<GNode> gNodes = graph->getGNodesFrom(triangle);
+    GNode* gNodes = graph->getGNodesFrom(triangle);
 
     int toBreak = chooseEdge(triangle->getData(), gNodes);
     if (toBreak < 0) {
@@ -19,22 +19,24 @@ public:
     }
     const Coordinates& newCoordinates = getHangingCoordinates(toBreak, gNodes);
     breakTriangle(toBreak, newCoordinates, gNodes, triangle);
+    delete gNodes;
     return true;
   }
 
 private:
 
   const Coordinates& getHangingCoordinates(int brokenEdge,
-                                    const vector<GNode>& gNodes) const {
-    vector<GNode> edgeHalves = graph->getGNodesFrom(gNodes[brokenEdge]);
+                                    const GNode* gNodes) const {
+    GNode* edgeHalves = graph->getGNodesFrom(gNodes[brokenEdge]);
     auto hangingCoordinates = Edge::getCommonPoint(edgeHalves[0]->getData(),
                                                    edgeHalves[1]->getData());
+    delete edgeHalves;
     return hangingCoordinates.get();
   }
 
 
   int chooseEdge(const Edge& triangle,
-                 const vector<GNode>& edges) {
+                 const GNode* edges) {
     if (!triangle.isTriangle()) {
       return -1;
     }
