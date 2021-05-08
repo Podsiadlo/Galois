@@ -15,10 +15,11 @@ public:
 protected:
   GraphAdapter* graph;
 
-  const Coordinates& breakEdge(int toBreak, Bag* bag, const GNode* gNodes);
+  const Coordinates& breakEdge(int toBreak, Bag* bag,
+                               const vector<GNode>& gNodes);
 
   void breakTriangle(int brokenEdgeIdx, const Coordinates& hangingPoint,
-                     GNode* gNodes, GNode triangle);
+                     vector<GNode> gNodes, GNode triangle);
 
 private:
   bool version2D;

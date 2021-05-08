@@ -12,7 +12,7 @@ public:
   using Production0x::Production0x;
 
   bool execute(const GNode& triangle, Bag* bag) override {
-    GNode* gNodes = graph->getGNodesFrom(triangle);
+    vector<GNode> gNodes = graph->getGNodesFrom(triangle);
 
     int edgeToBreakIdx = chooseEdge(triangle->getData(), gNodes);
     if (edgeToBreakIdx < 0) {
@@ -20,13 +20,12 @@ public:
     }
     const Coordinates& newCoordinates = breakEdge(edgeToBreakIdx, bag, gNodes);
     breakTriangle(edgeToBreakIdx, newCoordinates, gNodes, triangle);
-    delete gNodes;
     return true;
   }
 
 private:
   int chooseEdge(const Edge& triangle,
-                 GNode* edges) {
+                 const vector<GNode>& edges) {
     if (!triangle.isTriangle()) {
       return -1;
     }

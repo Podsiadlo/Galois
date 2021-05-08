@@ -1,6 +1,6 @@
 #include "Production0x.h"
 const Coordinates& Production0x::breakEdge(int toBreak, Bag* bag,
-                                           const GNode* gNodes) {
+                                           const vector<GNode>& gNodes) {
   Edge& edgeToBreak         = gNodes[toBreak]->getData();
   bool border               = edgeToBreak.isBorder();
   const Coordinates& middle = bag->emplace_back(edgeToBreak.getMiddle(
@@ -18,7 +18,7 @@ const Coordinates& Production0x::breakEdge(int toBreak, Bag* bag,
 
 void Production0x::breakTriangle(int brokenEdgeIdx,
                                  const Coordinates& hangingPoint,
-                                 GNode* gNodes, GNode triangle) {
+                                 vector<GNode> gNodes, GNode triangle) {
   auto oppositePoint =
       Edge::getCommonPoint(gNodes[firstAdjacent(brokenEdgeIdx)]->getData(),
                            gNodes[secondAdjacent(brokenEdgeIdx)]->getData())
@@ -26,7 +26,7 @@ void Production0x::breakTriangle(int brokenEdgeIdx,
   GNode newNode = graph->createAndAddNode(
       Edge(oppositePoint, cref(hangingPoint), false, version2D));
 
-  GNode* edgeHalves = graph->getGNodesFrom(gNodes[brokenEdgeIdx]);
+  vector<GNode> edgeHalves = graph->getGNodesFrom(gNodes[brokenEdgeIdx]);
   if (Edge::getCommonPoint(edgeHalves[0]->getData(),
                            gNodes[firstAdjacent(brokenEdgeIdx)]->getData())
           .is_initialized()) {
@@ -42,7 +42,7 @@ void Production0x::breakTriangle(int brokenEdgeIdx,
     graph->createTriangle(newNode, gNodes[secondAdjacent(brokenEdgeIdx)],
                           edgeHalves[0], triangle);
   }
-  delete edgeHalves;
+
   triangle->getData().setBroken(true);
   triangle->getData().setToRefine(false);
 }

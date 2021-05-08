@@ -13,25 +13,19 @@ public:
     }
   }
 
-  GNode* getGNodesFrom(GNode parent) const {
+  inline std::vector<GNode> getGNodesFrom(GNode parent) const {
     return getGNodesFrom(parent, graph);
   }
 
   std::vector<Coordinates>
   getCoordsOfTriangle(const GNode& triangleNode) const {
     std::set<Coordinates> coordsSet;
-    const GNode* edgeNodes = getGNodesFrom(triangleNode);
-    for (int i = 0; i < 3; ++i) {
-      auto edgeCoords = edgeNodes[i]->getData().getNodes();
+    const vector<GNode>& edgeNodes = getGNodesFrom(triangleNode);
+    for (auto* node : edgeNodes) {
+      auto edgeCoords = node->getData().getNodes();
       coordsSet.insert(edgeCoords.first);
       coordsSet.insert(edgeCoords.second);
     }
-//    for (auto* node : edgeNodes) {
-//      auto edgeCoords = node->getData().getNodes();
-//      coordsSet.insert(edgeCoords.first);
-//      coordsSet.insert(edgeCoords.second);
-//    }
-    delete edgeNodes;
     return std::vector<Coordinates>{coordsSet.begin(), coordsSet.end()};
   }
 
@@ -55,17 +49,13 @@ public:
 
   Graph* getGraph() const { return graph; }
 
-  static GNode* getGNodesFrom(GNode parent, Graph* graph) {
-    GNode* vertices = new GNode[3];
-    int i = 0;
-    for (auto outEdge : graph->out_edges(parent)) {
-      vertices[i++] = graph->getEdgeDst(outEdge);
-    }
+  static inline std::vector<GNode> getGNodesFrom(GNode parent, Graph* graph) {
+    std::vector<GNode> vertices;
     //    vertices.reserve(3);
-//    auto outEdges = graph->out_edges(parent);
-//    std::transform(outEdges.begin(), outEdges.end(),
-//                   std::back_inserter(vertices),
-//                   [&graph](auto& edge) { return graph->getEdgeDst(edge); });
+    auto outEdges = graph->out_edges(parent);
+    std::transform(outEdges.begin(), outEdges.end(),
+                   std::back_inserter(vertices),
+                   [&graph](auto& edge) { return graph->getEdgeDst(edge); });
     return vertices;
   }
 
