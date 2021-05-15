@@ -13,7 +13,7 @@ public:
     }
   }
 
-  inline std::vector<GNode> getGNodesFrom(GNode parent) const {
+  std::vector<GNode> getGNodesFrom(GNode parent) const {
     return getGNodesFrom(parent, graph);
   }
 
@@ -49,7 +49,7 @@ public:
 
   Graph* getGraph() const { return graph; }
 
-  static inline std::vector<GNode> getGNodesFrom(GNode parent, Graph* graph) {
+  static std::vector<GNode> getGNodesFrom(GNode parent, Graph* graph) {
     std::vector<GNode> vertices;
     //    vertices.reserve(3);
     auto outEdges = graph->out_edges(parent);
